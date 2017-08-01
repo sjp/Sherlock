@@ -7,6 +7,9 @@ using static SJP.Sherlock.NativeMethods;
 
 namespace SJP.Sherlock
 {
+    /// <summary>
+    /// Provides platform-dependent information.
+    /// </summary>
     public static class Platform
     {
         /// <summary>

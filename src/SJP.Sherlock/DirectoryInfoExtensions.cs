@@ -5,8 +5,17 @@ using System.Linq;
 
 namespace SJP.Sherlock
 {
+    /// <summary>
+    /// Extension methods for getting locking information on directories.
+    /// </summary>
     public static class DirectoryInfoExtensions
     {
+        /// <summary>
+        /// Retrieves any files that are locked within the specified directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory)
         {
             if (directory == null)
@@ -16,6 +25,13 @@ namespace SJP.Sherlock
             return files.Where(f => f.IsFileLocked()).ToList();
         }
 
+        /// <summary>
+        /// Retrieves any files that are locked matching a search pattern within the specified directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -25,6 +41,14 @@ namespace SJP.Sherlock
             return files.Where(f => f.IsFileLocked()).ToList();
         }
 
+        /// <summary>
+        /// Retrieves any files that are locked matching a search pattern within the specified directory, using a value to determine whether to search subdirectories.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
+        /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
@@ -34,6 +58,12 @@ namespace SJP.Sherlock
             return files.Where(f => f.IsFileLocked()).ToList();
         }
 
+        /// <summary>
+        /// Retrieves any files that are locked within the specified directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static IEnumerable<FileInfo> EnumerateLockedFiles(this DirectoryInfo directory)
         {
             if (directory == null)
@@ -44,6 +74,13 @@ namespace SJP.Sherlock
                 .Where(f => f.IsFileLocked());
         }
 
+        /// <summary>
+        /// Retrieves any files that are locked matching a search pattern within the specified directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static IEnumerable<FileInfo> EnumerateLockedFiles(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -54,6 +91,14 @@ namespace SJP.Sherlock
                 .Where(f => f.IsFileLocked());
         }
 
+        /// <summary>
+        /// Retrieves any files that are locked matching a search pattern within the specified directory, using a value to determine whether to search subdirectories.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
+        /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static IEnumerable<FileInfo> EnumerateLockedFiles(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
@@ -64,6 +109,12 @@ namespace SJP.Sherlock
                 .Where(f => f.IsFileLocked());
         }
 
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files within the directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static ISet<IProcessInfo> GetLockingProcesses(this DirectoryInfo directory)
         {
             if (directory == null)
@@ -81,6 +132,13 @@ namespace SJP.Sherlock
             return result;
         }
 
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files within the directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static ISet<IProcessInfo> GetLockingProcesses(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -98,6 +156,14 @@ namespace SJP.Sherlock
             return result;
         }
 
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files within the directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
+        /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static ISet<IProcessInfo> GetLockingProcesses(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
@@ -115,6 +181,12 @@ namespace SJP.Sherlock
             return result;
         }
 
+        /// <summary>
+        /// Determines whether any files in a directory are locked by a process.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <returns><b>True</b> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <b>false</b>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool ContainsLockedFiles(this DirectoryInfo directory)
         {
             if (directory == null)
@@ -123,6 +195,13 @@ namespace SJP.Sherlock
             return directory.GetLockingProcesses().Count > 0;
         }
 
+        /// <summary>
+        /// Determines whether any files in a directory are locked by a process.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <returns><b>True</b> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <b>false</b>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool ContainsLockedFiles(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -131,6 +210,14 @@ namespace SJP.Sherlock
             return directory.GetLockingProcesses(searchPattern).Count > 0;
         }
 
+        /// <summary>
+        /// Determines whether any files in a directory are locked by a process.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
+        /// <returns><b>True</b> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <b>false</b>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool ContainsLockedFiles(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)

@@ -7,10 +7,97 @@ using static SJP.Sherlock.NativeMethods;
 
 namespace SJP.Sherlock
 {
+    /// <summary>
+    /// Provides methods for retrieving file locking information via the Windows Restart Manager API.
+    /// </summary>
     public static class RestartManager
     {
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files within the directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
+        public static ISet<IProcessInfo> GetLockingProcesses(DirectoryInfo directory)
+        {
+            if (directory == null)
+                throw new ArgumentNullException(nameof(directory));
+
+            var files = directory.GetFiles();
+            var result = new HashSet<IProcessInfo>();
+
+            foreach (var file in files)
+            {
+                var lockingProcesses = file.GetLockingProcesses();
+                result.UnionWith(lockingProcesses);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files within the directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
+        public static ISet<IProcessInfo> GetLockingProcesses(DirectoryInfo directory, string searchPattern)
+        {
+            if (directory == null)
+                throw new ArgumentNullException(nameof(directory));
+
+            var files = directory.GetFiles(searchPattern);
+            var result = new HashSet<IProcessInfo>();
+
+            foreach (var file in files)
+            {
+                var lockingProcesses = file.GetLockingProcesses();
+                result.UnionWith(lockingProcesses);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files within the directory.
+        /// </summary>
+        /// <param name="directory">A directory to search for locked files.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
+        /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
+        /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
+        public static ISet<IProcessInfo> GetLockingProcesses(DirectoryInfo directory, string searchPattern, SearchOption searchOption)
+        {
+            if (directory == null)
+                throw new ArgumentNullException(nameof(directory));
+
+            var files = directory.GetFiles(searchPattern, searchOption);
+            var result = new HashSet<IProcessInfo>();
+
+            foreach (var file in files)
+            {
+                var lockingProcesses = file.GetLockingProcesses();
+                result.UnionWith(lockingProcesses);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files.
+        /// </summary>
+        /// <param name="files">A set of files to test for a process holding a lock.</param>
+        /// <returns>A set of processes that lock upon one or more files in <paramref name="files"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static ISet<IProcessInfo> GetLockingProcesses(params FileInfo[] files) => GetLockingProcesses(files as IEnumerable<FileInfo>);
 
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files.
+        /// </summary>
+        /// <param name="files">A set of files to test for a process holding a lock.</param>
+        /// <returns>A set of processes that lock upon one or more files in <paramref name="files"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static ISet<IProcessInfo> GetLockingProcesses(IEnumerable<FileInfo> files)
         {
             if (files == null)
@@ -20,8 +107,20 @@ namespace SJP.Sherlock
             return GetLockingProcesses(filePaths);
         }
 
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files.
+        /// </summary>
+        /// <param name="paths">A set of paths to test for a process holding a lock.</param>
+        /// <returns>A set of processes that lock upon one or more files in <paramref name="paths"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static ISet<IProcessInfo> GetLockingProcesses(params string[] paths) => GetLockingProcesses(paths as IEnumerable<string>);
 
+        /// <summary>
+        /// Retrieves the set of processes which contain locks on one or more files.
+        /// </summary>
+        /// <param name="paths">A set of file paths to test for a process holding a lock.</param>
+        /// <returns>A set of processes that lock upon one or more files in <paramref name="paths"/>.</returns>
+        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static ISet<IProcessInfo> GetLockingProcesses(IEnumerable<string> paths)
         {
             if (paths == null)
@@ -50,20 +149,8 @@ namespace SJP.Sherlock
                 if (errorCode != WinErrorCode.ERROR_SUCCESS)
                     throw GetException(errorCode, nameof(NativeMethods.RmRegisterResources), "Could not register resources.");
 
-                //
-                // Obtain the list of affected applications/services.
-                //
-                // NOTE: Restart Manager returns the results into the buffer allocated by the caller. The first call to
-                // RmGetList() will return the size of the buffer (i.e. nProcInfoNeeded) the caller needs to allocate.
-                // The caller then needs to allocate the buffer (i.e. rgAffectedApps) and make another RmGetList()
-                // call to ask Restart Manager to write the results into the buffer. However, since Restart Manager
-                // refreshes the list every time RmGetList()is called, it is possible that the size returned by the first
-                // RmGetList()call is not sufficient to hold the results discovered by the second RmGetList() call. Therefore,
-                // it is recommended that the caller follows the following practice to handle this race condition:
-                //
-                //    Use a loop to call RmGetList() in case the buffer allocated according to the size returned in previous
-                //    call is not enough.
-                //
+                // Repeated calls to RmGetList will often be required.
+                // Keep calling until ERROR_MORE_DATA is no longer returned or max # of retries is reached, whichever is first.
                 uint pnProcInfo = 0;
                 RM_PROCESS_INFO[] rgAffectedApps = null;
                 int retry = 0;

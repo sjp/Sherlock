@@ -5,8 +5,6 @@
     /// </summary>
     public enum ApplicationType
     {
-        // Members must have the same values as in NativeMethods.RM_APP_TYPE
-
         /// <summary>
         /// The application cannot be classified as any other type. An application of this type can only be shut down by a forced shutdown.
         /// </summary>
