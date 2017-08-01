@@ -8,9 +8,9 @@ namespace SJP.Sherlock
 {
     public static class RestartManager
     {
-        public static ISet<ProcessInfo> GetLockingProcesses(params string[] paths) => GetLockingProcesses(paths as IEnumerable<string>);
+        public static ISet<IProcessInfo> GetLockingProcesses(params string[] paths) => GetLockingProcesses(paths as IEnumerable<string>);
 
-        public static ISet<ProcessInfo> GetLockingProcesses(IEnumerable<string> paths)
+        public static ISet<IProcessInfo> GetLockingProcesses(IEnumerable<string> paths)
         {
             if (paths == null)
                 throw new ArgumentNullException(nameof(paths));
@@ -64,7 +64,7 @@ namespace SJP.Sherlock
                         if (pnProcInfo == 0)
                             return _emptySet;
 
-                        var lockInfos = new List<ProcessInfo>((int)pnProcInfo);
+                        var lockInfos = new List<IProcessInfo>((int)pnProcInfo);
                         for (var i = 0; i < pnProcInfo; i++)
                         {
                             var rgAffectedApp = rgAffectedApps[i];
@@ -72,7 +72,7 @@ namespace SJP.Sherlock
                             lockInfos.Add(procInfo);
                         }
 
-                        return new HashSet<ProcessInfo>(lockInfos);
+                        return new HashSet<IProcessInfo>(lockInfos);
                     }
 
                     if (errorCode != WinErrorCode.ERROR_MORE_DATA)
@@ -92,7 +92,7 @@ namespace SJP.Sherlock
             return _emptySet;
         }
 
-        private static ProcessInfo CreateFromRmProcessInfo(RM_PROCESS_INFO procInfo)
+        private static IProcessInfo CreateFromRmProcessInfo(RM_PROCESS_INFO procInfo)
         {
             var processId = procInfo.Process.dwProcessId;
 
@@ -145,6 +145,6 @@ namespace SJP.Sherlock
             // ignoring ERROR_SUCCESS because this is the OK case
         };
 
-        private readonly static ISet<ProcessInfo> _emptySet = new HashSet<ProcessInfo>();
+        private readonly static ISet<IProcessInfo> _emptySet = new HashSet<IProcessInfo>();
     }
 }

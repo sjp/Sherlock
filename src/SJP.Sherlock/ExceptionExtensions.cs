@@ -63,7 +63,7 @@ namespace SJP.Sherlock
             throw ex;
         }
 
-        private static string FormatLockingMessage(IEnumerable<ProcessInfo> lockers, IEnumerable<string> fileNames, int? max = null)
+        private static string FormatLockingMessage(IEnumerable<IProcessInfo> lockers, IEnumerable<string> fileNames, int? max = null)
         {
             if (lockers == null || !lockers.Any())
                 return string.Empty;

@@ -3,7 +3,7 @@ using EnumsNET;
 
 namespace SJP.Sherlock
 {
-    public class ProcessInfo : IProcessInfo, IEquatable<ProcessInfo>
+    internal class ProcessInfo : IProcessInfo, IEquatable<ProcessInfo>
     {
         public ProcessInfo(uint processId, DateTime startTime, string applicationName, string serviceShortName, ApplicationType appType, ApplicationStatus appStatus, uint sessionId, bool restartable)
         {

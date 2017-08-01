@@ -1,7 +1,7 @@
 ﻿namespace SJP.Sherlock
 {
     /// <summary>
-    /// Specifies the type of application that is described by <see cref="ProcessInfo"/>.
+    /// Specifies the type of application that is described by <see cref="IProcessInfo"/>.
     /// </summary>
     public enum ApplicationType
     {
