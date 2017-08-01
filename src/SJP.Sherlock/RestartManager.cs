@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using static SJP.Sherlock.NativeMethods;
 
@@ -8,6 +9,17 @@ namespace SJP.Sherlock
 {
     public static class RestartManager
     {
+        public static ISet<IProcessInfo> GetLockingProcesses(params FileInfo[] files) => GetLockingProcesses(files as IEnumerable<FileInfo>);
+
+        public static ISet<IProcessInfo> GetLockingProcesses(IEnumerable<FileInfo> files)
+        {
+            if (files == null)
+                throw new ArgumentNullException(nameof(files));
+
+            var filePaths = files.Select(f => f.FullName).ToList();
+            return GetLockingProcesses(filePaths);
+        }
+
         public static ISet<IProcessInfo> GetLockingProcesses(params string[] paths) => GetLockingProcesses(paths as IEnumerable<string>);
 
         public static ISet<IProcessInfo> GetLockingProcesses(IEnumerable<string> paths)
@@ -16,7 +28,7 @@ namespace SJP.Sherlock
                 throw new ArgumentNullException(nameof(paths));
 
             if (!Platform.SupportsRestartManager)
-                return _emptySet;
+                throw new PlatformNotSupportedException("The Restart Manager API is available on this operating system. It was introduced in Windows NT v6.0 (i.e. Vista and Server 2008).");
 
             var pathsArray = paths.ToArray();
             if (pathsArray.Length == 0)

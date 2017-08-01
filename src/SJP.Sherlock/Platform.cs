@@ -10,7 +10,7 @@ namespace SJP.Sherlock
     public static class Platform
     {
         /// <summary>
-        /// Determines Restart Manager API is available on the operating system. The API was introduced in Windows NT v6.0 (i.e. Vista and Server 2008.
+        /// Determines if the Restart Manager API is available on the operating system. The API was introduced in Windows NT v6.0 (i.e. Vista and Server 2008).
         /// </summary>
         public static bool SupportsRestartManager => IsWindows && OsVersion >= MinimumRequiredWindowsVersion;
 
