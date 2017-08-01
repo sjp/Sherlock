@@ -1,6 +1,9 @@
 ﻿using System;
+
+#if !NETFX
 using System.Runtime.InteropServices;
 using static SJP.Sherlock.NativeMethods;
+#endif
 
 namespace SJP.Sherlock
 {
@@ -13,7 +16,11 @@ namespace SJP.Sherlock
 
         private static bool IsWindows => _isWindows.Value;
 
+#if NETFX
+        private readonly static Lazy<bool> _isWindows = new Lazy<bool>(() => Environment.OSVersion.Platform  == PlatformID.Win32NT);
+#else
         private readonly static Lazy<bool> _isWindows = new Lazy<bool>(() => RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
+#endif
 
         private static Version OsVersion => _osVersion.Value;
 
@@ -21,10 +28,14 @@ namespace SJP.Sherlock
 
         private static Version GetOsVersion()
         {
+#if NETFX
+            return Environment.OSVersion.Version;
+#else
             var versionInfo = new OSVERSIONINFOEX { dwOSVersionInfoSize = Marshal.SizeOf<OSVERSIONINFOEX>() };
             GetVersionEx(ref versionInfo);
 
             return new Version(versionInfo.dwMajorVersion, versionInfo.dwMinorVersion, versionInfo.dwBuildNumber);
+#endif
         }
 
         // represents NT v6.0, i.e. Windows Vista and Windows Server 2008

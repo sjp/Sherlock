@@ -1,18 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TargetFrameworks>net40;net45;net451;netcoreapp1.1;netstandard1.5</TargetFrameworks>
+    <!-- Don't reference the full NETStandard.Library -->
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
+    <!--<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\.xml</DocumentationFile>-->
+    <Authors>Simon Potter</Authors>
+    <Company />
+    <Product />
+    <Description>Finds out which processes are holding locks on files</Description>
+    <Copyright>Copyright © Simon Potter 2017</Copyright>
+    <PackageLicenseUrl>https://raw.github.com/sjp/Sherlock/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/sjp/Sherlock</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sjp/Sherlock</RepositoryUrl>
+    <!--<PackageIconUrl>https://raw.github.com/sjp/Sherlock/master/sherlock.svg</PackageIconUrl>-->
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <TreatSpecificWarningsAsErrors />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40'">
+    <DefineConstants>$(DefineConstants);NET40</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' Or '$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'net451' ">
+    <DefineConstants>$(DefineConstants);NETFX</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' Or '$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'net451' ">
+    <Reference Include="System" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Enums.NET" Version="2.2.0" />

@@ -132,7 +132,7 @@ namespace SJP.Sherlock
             throw new Win32Exception(errorCodeNumber, $"{ message } ({ apiName }() error { errorCodeNumber.ToString() }: { reason })");
         }
 
-        private static readonly IReadOnlyDictionary<WinErrorCode, string> _win32ErrorMessages = new Dictionary<WinErrorCode, string>
+        private static readonly IDictionary<WinErrorCode, string> _win32ErrorMessages = new Dictionary<WinErrorCode, string>
         {
             [WinErrorCode.ERROR_SEM_TIMEOUT] = "A Restart Manager function could not obtain a Registry write mutex in the allotted time. A system restart is recommended because further use of the Restart Manager is likely to fail.",
             [WinErrorCode.ERROR_BAD_ARGUMENTS] = "One or more arguments are not correct. This error value is returned by the Restart Manager function if a NULL pointer or 0 is passed in a parameter that requires a non-null and non-zero value.",

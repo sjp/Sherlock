@@ -19,7 +19,7 @@ namespace SJP.Sherlock
             // Generally it is not safe / stable to convert HRESULTs to Win32 error codes. It works here,
             // because we exactly know where we're at. So resist refactoring the following code into an
             // (maybe even externally visible) method.
-            var numericErrorCode = exception.HResult & ((1 << 16) - 1);
+            var numericErrorCode = GetHResult(exception) & ((1 << 16) - 1);
 
             if (!Enums.TryToObject<WinErrorCode>(numericErrorCode, out var errorCode))
                 return false; // don't know the error code so we know it's at least not locked
@@ -58,7 +58,7 @@ namespace SJP.Sherlock
             // Must use reflection to set the HResult while using the ctor to set the InnerException.
             // Nasty but necessary.
             var ex = new IOException(sb.ToString(), exception);
-            SetErrorCodeMethod?.Invoke(ex, new object[] { exception.HResult });
+            SetErrorCodeMethod?.Invoke(ex, new object[] { GetHResult(exception) });
 
             throw ex;
         }
@@ -108,11 +108,34 @@ namespace SJP.Sherlock
             return builder.ToString();
         }
 
+        private static int GetHResult(Exception ex)
+        {
+#if NET40
+            return (int)HResultProperty.GetValue(ex, null);
+#else
+            return ex.HResult;
+#endif
+        }
+
         private static MethodInfo SetErrorCodeMethod => _setErrorCodeMethod.Value;
 
+#if NETFX
         private static readonly Lazy<MethodInfo> _setErrorCodeMethod = new Lazy<MethodInfo>(() =>
+            typeof(Exception)
+                .GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
+#else
+        private readonly static Lazy<MethodInfo> _setErrorCodeMethod = new Lazy<MethodInfo>(() =>
             typeof(Exception)
                 .GetTypeInfo()
                 .GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
+#endif
+
+#if NET40
+        private static PropertyInfo HResultProperty => _getHResultProperty.Value;
+
+        private readonly static Lazy<PropertyInfo> _getHResultProperty = new Lazy<PropertyInfo>(() =>
+            typeof(Exception)
+                .GetProperty("HResult", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
+#endif
     }
 }
