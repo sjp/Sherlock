@@ -82,6 +82,11 @@ namespace SJP.Sherlock
             ERROR_SUCCESS = 0,
 
             /// <summary>
+            /// Access is denied.
+            /// </summary>
+            ERROR_ACCESS_DENIED = 5,
+
+            /// <summary>
             /// No Restart Manager session exists for the handle supplied.
             /// </summary>
             ERROR_INVALID_HANDLE = 6,

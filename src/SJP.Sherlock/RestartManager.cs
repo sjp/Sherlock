@@ -102,6 +102,8 @@ namespace SJP.Sherlock
         {
             if (files == null)
                 throw new ArgumentNullException(nameof(files));
+            if (files.Any(f => f == null))
+                throw new ArgumentException($"A null { nameof(FileInfo) } was provided.", nameof(files));
 
             var filePaths = files.Select(f => f.FullName).ToList();
             return GetLockingProcesses(filePaths);
@@ -125,6 +127,8 @@ namespace SJP.Sherlock
         {
             if (paths == null)
                 throw new ArgumentNullException(nameof(paths));
+            if (paths.Any(p => p == null))
+                throw new ArgumentException("A null file path was provided.", nameof(paths));
 
             if (!Platform.SupportsRestartManager)
                 throw new PlatformNotSupportedException("The Restart Manager API is available on this operating system. It was introduced in Windows NT v6.0 (i.e. Vista and Server 2008).");
@@ -223,16 +227,17 @@ namespace SJP.Sherlock
 
         private static Exception GetException(WinErrorCode errorCode, string apiName, string message)
         {
+            var errorCodeNumber = (int)errorCode;
             var reason = _win32ErrorMessages.ContainsKey(errorCode)
                 ? _win32ErrorMessages[errorCode]
-                : string.Format("0x{0:x8}", errorCode);
+                : string.Format("0x{0:x8}", errorCodeNumber);
 
-            var errorCodeNumber = (int)errorCode;
             throw new Win32Exception(errorCodeNumber, $"{ message } ({ apiName }() error { errorCodeNumber.ToString() }: { reason })");
         }
 
         private static readonly IDictionary<WinErrorCode, string> _win32ErrorMessages = new Dictionary<WinErrorCode, string>
         {
+            [WinErrorCode.ERROR_ACCESS_DENIED] = "Access is denied.",
             [WinErrorCode.ERROR_SEM_TIMEOUT] = "A Restart Manager function could not obtain a Registry write mutex in the allotted time. A system restart is recommended because further use of the Restart Manager is likely to fail.",
             [WinErrorCode.ERROR_BAD_ARGUMENTS] = "One or more arguments are not correct. This error value is returned by the Restart Manager function if a NULL pointer or 0 is passed in a parameter that requires a non-null and non-zero value.",
             [WinErrorCode.ERROR_MAX_SESSIONS_REACHED] = "The maximum number of sessions has been reached.",

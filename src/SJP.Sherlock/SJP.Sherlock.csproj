@@ -10,7 +10,7 @@
     <Authors>Simon Potter</Authors>
     <Company />
     <Product />
-    <Description>Finds out which processes are holding locks on files</Description>
+    <Description>Easily find out which processes are holding locks on files.</Description>
     <Copyright>Copyright © Simon Potter 2017</Copyright>
     <PackageLicenseUrl>https://raw.github.com/sjp/Sherlock/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/sjp/Sherlock</PackageProjectUrl>

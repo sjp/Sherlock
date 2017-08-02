@@ -118,6 +118,8 @@ namespace SJP.Sherlock
                 throw new ArgumentNullException(nameof(exception));
             if (files == null)
                 throw new ArgumentNullException(nameof(files));
+            if (files.Any(f => f == null))
+                throw new ArgumentException($"A null { nameof(FileInfo) } was provided.", nameof(files));
 
             var fileNames = files.Select(f => f.FullName).ToList();
             return exception.RethrowWithLockingInformation(fileNames);
@@ -146,6 +148,8 @@ namespace SJP.Sherlock
                 throw new ArgumentNullException(nameof(exception));
             if (fileNames == null)
                 throw new ArgumentNullException(nameof(fileNames));
+            if (fileNames.Any(f => f == null))
+                throw new ArgumentException("A null filename was provided.", nameof(fileNames));
 
             var ioex = exception as IOException;
             if (ioex == null || !ioex.IsFileLocked())
