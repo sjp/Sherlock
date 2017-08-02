@@ -15,7 +15,7 @@
     <PackageLicenseUrl>https://raw.github.com/sjp/Sherlock/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/sjp/Sherlock</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sjp/Sherlock</RepositoryUrl>
-    <!--<PackageIconUrl>https://raw.github.com/sjp/Sherlock/master/sherlock.svg</PackageIconUrl>-->
+    <PackageIconUrl>https://raw.github.com/sjp/Sherlock/master/sherlock.svg</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">

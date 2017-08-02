@@ -1,1 +1,88 @@
-# Sherlock
+<h1 align="center">
+	<br>
+	<img width="200" height="200" src="sherlock.svg" alt="Sherlock">
+	<br>
+	<br>
+</h1>
+
+> Easily find out which processes are holding locks on files.
+
+[![License (MIT)](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/e603c1hyj2vka7o5?svg=true)](https://ci.appveyor.com/project/sjp/sherlock)
+
+This project uses the Windows Restart Manager APIs to find processes locking one or multiple files. Consequently this is not portable to any platform aside from those running Windows Vista or Windows Server 2008 or newer. It supports .NET Core 1.1, .NET Standard 1.5 and .NET 4.0 or greater.
+
+Inspiration for this project comes from [LockCheck](https://github.com/cklutz/LockCheck), but adds support for .NET Core and .NET Standard, in addition to being more easily distributed as a library. Furthermore, more helper methods have been provided for working with files and directories to determine whether locks are present.
+
+## Examples
+
+Determine if a file is locked.
+
+```csharp
+var exampleFile = new FileInfo("example.txt");
+using (var fileStream = exampleFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+{
+    bool isLocked = exampleFile.IsFileLocked(); // returns true as example.txt is locked
+
+    // find out who is locking the process, which should describe the current process
+    ISet<IProcessInfo> lockingProcesses = exampleFile.GetLockingProcesses();
+}
+```
+
+This can be alternatively written as:
+
+```csharp
+var exampleFile = new FileInfo("example.txt");
+using (var fileStream = exampleFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+{
+    // use the RestartManager interface this time
+    ISet<IProcessInfo> lockingProcesses = RestartManager.GetLockingProcesses(exampleFile);
+}
+```
+
+There are `GetLockingProcesses()` overloads for `string`, `FileInfo` and `DirectoryInfo` objects to make querying for this information easier. Additionally `DirectoryInfo` objects can be queried with the following methods:
+
+```csharp
+var tempDir = new DirectoryInfo(@"C:\tmp");
+
+IEnumerable<FileInfo> lockedFiles = tempDir.GetLockedFiles();
+IEnumerable<FileInfo> enumeratedLockedFiles = tempDir.EnumerateLockedFiles();
+bool hasLockedFiles = tempDir.ContainsLockedFiles();
+```
+
+## Installation
+
+*NOTE*: this is still a WIP, but the project will be available on Nuget via the following installation methods below.
+
+```powershell
+Install-Package SJP.Sherlock
+```
+
+or
+
+```console
+dotnet add package SJP.Sherlock
+```
+
+## API
+
+Aside from the API examples shown earlier the following methods and properties are also provided.
+
+### `Platform.SupportsRestartManager`
+
+If you are unsure whether the platform you're using has access to the Restart Manager API, please use this helper property. Restart Manager is available on all Windows systems that are at least as new as Windows Vista and Windows Server 2008. Any use of the rest of the Sherlock API will result in a `PlatformNotSupportedException` exception being thrown when Restart Manager is not present.
+
+```csharp
+bool hasRestartManager = Platform.SupportsRestartManager();
+```
+
+### `IOException.IsFileLocked()`
+
+Determines whether an `IOException` was thrown as a result of a file being locked.
+
+### `Exception.RethrowWithLockingInformation()`
+
+When given a directory or a list of files that can be locked, this will rethrow the exception with more information on which files are locked and which processes are locking them. Otherwise, if there are no locked files it will simply return `false` and not throw and exception.
+
+## Icon
+
+The icon was created by myself (and modified slightly) as a combination of both a magnifying glass icon by [Freepik](http://www.freepik.com) and a lock icon by [Gregor Cresnar](https://www.flaticon.com/authors/gregor-cresnar).
