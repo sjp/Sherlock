@@ -1,6 +1,6 @@
 <h1 align="center">
 	<br>
-	<img width="200" height="200" src="sherlock.svg" alt="Sherlock">
+	<img width="200" height="200" src="sherlock.png" alt="Sherlock">
 	<br>
 	<br>
 </h1>
