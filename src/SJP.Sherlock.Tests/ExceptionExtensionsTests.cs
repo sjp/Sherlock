@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using NUnit.Framework;
 
 namespace SJP.Sherlock.Tests
@@ -44,7 +41,6 @@ namespace SJP.Sherlock.Tests
 
             tmpPath.Delete();
         }
-
 
         [Test]
         public void RethrowWithLockingInformation_GivenNullExceptionAndValidDirectory_ThrowsArgNullException()
