@@ -3,7 +3,7 @@ using EnumsNET;
 
 namespace SJP.Sherlock
 {
-    internal class ProcessInfo : IProcessInfo, IEquatable<ProcessInfo>
+    internal sealed class ProcessInfo : IProcessInfo, IEquatable<ProcessInfo>
     {
         public ProcessInfo(uint processId, DateTime startTime, string applicationName, string serviceShortName, ApplicationType appType, ApplicationStatus appStatus, uint sessionId, bool restartable)
         {
@@ -52,29 +52,23 @@ namespace SJP.Sherlock
             }
         }
 
-        /// <summary>
-        /// Equality operator for ProcessInfo objects
-        /// </summary>
-        /// <param name="a">A ProcessInfo object.</param>
-        /// <param name="b">Another ProcessInfo object.</param>
-        /// <returns><b>True</b> if the ProcessInfo objects represent the same processes, otherwise <b>false</b>.</returns>
         public static bool operator ==(ProcessInfo a, ProcessInfo b)
         {
             if (ReferenceEquals(a, b))
                 return true;
 
+            if (ReferenceEquals(a, null) ^ ReferenceEquals(b, null))
+                return false;
+
             return a.Equals(b);
         }
 
-        /// <summary>
-        /// Inequality operator for ProcessInfo objects
-        /// </summary>
-        /// <param name="a">A ProcessInfo object.</param>
-        /// <param name="b">Another ProcessInfo object.</param>
-        /// <returns><b>True</b> if the ProcessInfo objects represent different processes, otherwise <b>false</b>.</returns>
         public static bool operator !=(ProcessInfo a, ProcessInfo b)
         {
-            if (!ReferenceEquals(a, b))
+            if (ReferenceEquals(a, b))
+                return false;
+
+            if (ReferenceEquals(a, null) ^ ReferenceEquals(b, null))
                 return true;
 
             return !a.Equals(b);
