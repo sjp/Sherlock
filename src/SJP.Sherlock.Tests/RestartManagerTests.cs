@@ -35,7 +35,7 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                Assert.IsTrue(lockingProcs.Count > 0);
+                Assert.IsTrue(lockingProcs.Any());
             }
 
             File.Delete(tmpPath);
@@ -74,7 +74,7 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockingProcs = RestartManager.GetLockingProcesses(tmpDir);
-                Assert.IsTrue(lockingProcs.Count > 0);
+                Assert.IsTrue(lockingProcs.Any());
             }
 
             tmpDir.Delete(true);
@@ -112,7 +112,7 @@ namespace SJP.Sherlock.Tests
             var arg = new List<string>();
             var result = RestartManager.GetLockingProcesses(arg);
 
-            Assert.AreEqual(0, result.Count);
+            Assert.AreEqual(0, result.Count());
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace SJP.Sherlock.Tests
             var arg = new List<FileInfo>();
             var result = RestartManager.GetLockingProcesses(arg);
 
-            Assert.AreEqual(0, result.Count);
+            Assert.AreEqual(0, result.Count());
         }
     }
 }

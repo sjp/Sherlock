@@ -17,11 +17,13 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="directory">A directory to search for locked files.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
-        public static ISet<IProcessInfo> GetLockingProcesses(DirectoryInfo directory)
+        public static IEnumerable<IProcessInfo> GetLockingProcesses(DirectoryInfo directory)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory));
+
+            if (!Platform.SupportsRestartManager)
+                return Enumerable.Empty<IProcessInfo>();
 
             var files = directory.GetFiles();
             var result = new HashSet<IProcessInfo>();
@@ -41,11 +43,13 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory to search for locked files.</param>
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
-        public static ISet<IProcessInfo> GetLockingProcesses(DirectoryInfo directory, string searchPattern)
+        public static IEnumerable<IProcessInfo> GetLockingProcesses(DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory));
+
+            if (!Platform.SupportsRestartManager)
+                return Enumerable.Empty<IProcessInfo>();
 
             var files = directory.GetFiles(searchPattern);
             var result = new HashSet<IProcessInfo>();
@@ -66,11 +70,13 @@ namespace SJP.Sherlock
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
-        public static ISet<IProcessInfo> GetLockingProcesses(DirectoryInfo directory, string searchPattern, SearchOption searchOption)
+        public static IEnumerable<IProcessInfo> GetLockingProcesses(DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory));
+
+            if (!Platform.SupportsRestartManager)
+                return Enumerable.Empty<IProcessInfo>();
 
             var files = directory.GetFiles(searchPattern, searchOption);
             var result = new HashSet<IProcessInfo>();
@@ -89,21 +95,22 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="files">A set of files to test for a process holding a lock.</param>
         /// <returns>A set of processes that lock upon one or more files in <paramref name="files"/>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
-        public static ISet<IProcessInfo> GetLockingProcesses(params FileInfo[] files) => GetLockingProcesses(files as IEnumerable<FileInfo>);
+        public static IEnumerable<IProcessInfo> GetLockingProcesses(params FileInfo[] files) => GetLockingProcesses(files as IEnumerable<FileInfo>);
 
         /// <summary>
         /// Retrieves the set of processes which contain locks on one or more files.
         /// </summary>
         /// <param name="files">A set of files to test for a process holding a lock.</param>
         /// <returns>A set of processes that lock upon one or more files in <paramref name="files"/>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
-        public static ISet<IProcessInfo> GetLockingProcesses(IEnumerable<FileInfo> files)
+        public static IEnumerable<IProcessInfo> GetLockingProcesses(IEnumerable<FileInfo> files)
         {
             if (files == null)
                 throw new ArgumentNullException(nameof(files));
             if (files.Any(f => f == null))
                 throw new ArgumentException($"A null { nameof(FileInfo) } was provided.", nameof(files));
+
+            if (!Platform.SupportsRestartManager)
+                return Enumerable.Empty<IProcessInfo>();
 
             var filePaths = files.Select(f => f.FullName).ToList();
             return GetLockingProcesses(filePaths);
@@ -114,16 +121,14 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="paths">A set of paths to test for a process holding a lock.</param>
         /// <returns>A set of processes that lock upon one or more files in <paramref name="paths"/>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
-        public static ISet<IProcessInfo> GetLockingProcesses(params string[] paths) => GetLockingProcesses(paths as IEnumerable<string>);
+        public static IEnumerable<IProcessInfo> GetLockingProcesses(params string[] paths) => GetLockingProcesses(paths as IEnumerable<string>);
 
         /// <summary>
         /// Retrieves the set of processes which contain locks on one or more files.
         /// </summary>
         /// <param name="paths">A set of file paths to test for a process holding a lock.</param>
         /// <returns>A set of processes that lock upon one or more files in <paramref name="paths"/>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
-        public static ISet<IProcessInfo> GetLockingProcesses(IEnumerable<string> paths)
+        public static IEnumerable<IProcessInfo> GetLockingProcesses(IEnumerable<string> paths)
         {
             if (paths == null)
                 throw new ArgumentNullException(nameof(paths));
@@ -131,11 +136,11 @@ namespace SJP.Sherlock
                 throw new ArgumentException("A null file path was provided.", nameof(paths));
 
             if (!Platform.SupportsRestartManager)
-                throw new PlatformNotSupportedException("The Restart Manager API is available on this operating system. It was introduced in Windows NT v6.0 (i.e. Vista and Server 2008).");
+                return Enumerable.Empty<IProcessInfo>();
 
             var pathsArray = paths.ToArray();
             if (pathsArray.Length == 0)
-                return _emptySet;
+                return Enumerable.Empty<IProcessInfo>();
 
             const int maxRetries = 10;
 
@@ -165,7 +170,7 @@ namespace SJP.Sherlock
                     if (errorCode == WinErrorCode.ERROR_SUCCESS)
                     {
                         if (pnProcInfo == 0)
-                            return _emptySet;
+                            return Enumerable.Empty<IProcessInfo>();
 
                         var lockInfos = new List<IProcessInfo>((int)pnProcInfo);
                         for (var i = 0; i < pnProcInfo; i++)
@@ -192,7 +197,7 @@ namespace SJP.Sherlock
                     throw GetException(errorCode, nameof(NativeMethods.RmEndSession), "Failed to end the restart manager session.");
             }
 
-            return _emptySet;
+            return Enumerable.Empty<IProcessInfo>();
         }
 
         private static IProcessInfo CreateFromRmProcessInfo(RM_PROCESS_INFO procInfo)
@@ -248,7 +253,5 @@ namespace SJP.Sherlock
             [WinErrorCode.ERROR_INVALID_HANDLE] = "No Restart Manager session exists for the handle supplied."
             // ignoring ERROR_SUCCESS because this is the OK case
         };
-
-        private readonly static ISet<IProcessInfo> _emptySet = new HashSet<IProcessInfo>();
     }
 }

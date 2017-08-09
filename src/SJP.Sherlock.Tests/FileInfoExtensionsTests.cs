@@ -29,7 +29,7 @@ namespace SJP.Sherlock.Tests
             var tmpPath = new FileInfo(Path.GetTempFileName());
             var lockingProcs = tmpPath.GetLockingProcesses();
 
-            Assert.IsTrue(lockingProcs.Count == 0);
+            Assert.IsTrue(!lockingProcs.Any());
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace SJP.Sherlock.Tests
             using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                Assert.AreEqual(1, lockingProcs.Count);
+                Assert.AreEqual(1, lockingProcs.Count());
             }
 
             tmpPath.Delete();

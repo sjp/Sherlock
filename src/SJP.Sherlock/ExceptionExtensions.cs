@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using EnumsNET;
 using static SJP.Sherlock.NativeMethods;
@@ -19,7 +20,6 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="exception">An <see cref="IOException"/> that has been thrown.</param>
         /// <returns><b>True</b> if the exception was thrown due to a lock held on a file, otherwise <b>false</b>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool IsFileLocked(this IOException exception)
         {
             if (exception == null)
@@ -28,7 +28,7 @@ namespace SJP.Sherlock
             // Generally it is not safe / stable to convert HRESULTs to Win32 error codes. It works here,
             // because we exactly know where we're at. So resist refactoring the following code into an
             // (maybe even externally visible) method.
-            var numericErrorCode = GetHResult(exception) & ((1 << 16) - 1);
+            var numericErrorCode = Marshal.GetHRForException(exception) & ((1 << 16) - 1);
 
             if (!Enums.TryToObject<WinErrorCode>(numericErrorCode, out var errorCode))
                 return false; // don't know the error code so we know it's at least not locked
@@ -43,7 +43,6 @@ namespace SJP.Sherlock
         /// <param name="exception">The exception that was thrown due to a lock held on a file.</param>
         /// <param name="directory">A directory containing files that could have been locked upon.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files in the directory.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, DirectoryInfo directory)
         {
             if (exception == null)
@@ -62,7 +61,6 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory containing files that could have been locked upon.</param>
         /// <param name="searchPattern">The search string to match against the names of files.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files in the directory.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, DirectoryInfo directory, string searchPattern)
         {
             if (exception == null)
@@ -82,7 +80,6 @@ namespace SJP.Sherlock
         /// <param name="searchPattern">The search string to match against the names of files.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory or all subdirectories. The default value is <see cref="SearchOption.TopDirectoryOnly"/>.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files in the directory.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (exception == null)
@@ -100,7 +97,6 @@ namespace SJP.Sherlock
         /// <param name="exception">The exception that was thrown due to a lock held on a file.</param>
         /// <param name="files">A collection of files that could have been locked upon.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, params FileInfo[] files) =>
             RethrowWithLockingInformation(exception, files as IEnumerable<FileInfo>);
 
@@ -110,7 +106,6 @@ namespace SJP.Sherlock
         /// <param name="exception">The exception that was thrown due to a lock held on a file.</param>
         /// <param name="files">A collection of files that could have been locked upon.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, IEnumerable<FileInfo> files)
         {
             if (exception == null)
@@ -130,7 +125,6 @@ namespace SJP.Sherlock
         /// <param name="exception">The exception that was thrown due to a lock held on a file.</param>
         /// <param name="fileNames">A collection of file paths that could have been locked upon.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, params string[] fileNames) =>
             RethrowWithLockingInformation(exception, fileNames as IEnumerable<string>);
 
@@ -140,7 +134,6 @@ namespace SJP.Sherlock
         /// <param name="exception">The exception that was thrown due to a lock held on a file.</param>
         /// <param name="fileNames">A collection of file paths that could have been locked upon.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, IEnumerable<string> fileNames)
         {
             if (exception == null)
@@ -155,7 +148,7 @@ namespace SJP.Sherlock
                 return false;
 
             var lockers = RestartManager.GetLockingProcesses(fileNames);
-            if (lockers.Count == 0)
+            if (!lockers.Any())
                 return false;
 
             const int max = 10;
@@ -170,7 +163,7 @@ namespace SJP.Sherlock
             // Must use reflection to set the HResult while using the ctor to set the InnerException.
             // Nasty but necessary.
             var ex = new IOException(sb.ToString(), exception);
-            SetErrorCodeMethod?.Invoke(ex, new object[] { GetHResult(exception) });
+            SetErrorCodeMethod?.Invoke(ex, new object[] { Marshal.GetHRForException(exception) });
 
             throw ex;
         }
@@ -220,34 +213,13 @@ namespace SJP.Sherlock
             return builder.ToString();
         }
 
-        private static int GetHResult(Exception ex)
-        {
-#if NET40
-            return (int)HResultProperty.GetValue(ex, null);
-#else
-            return ex.HResult;
-#endif
-        }
-
         private static MethodInfo SetErrorCodeMethod => _setErrorCodeMethod.Value;
 
-#if NETFX
-        private static readonly Lazy<MethodInfo> _setErrorCodeMethod = new Lazy<MethodInfo>(() =>
-            typeof(Exception)
-                .GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
-#else
         private readonly static Lazy<MethodInfo> _setErrorCodeMethod = new Lazy<MethodInfo>(() =>
             typeof(Exception)
+#if !NETFX
                 .GetTypeInfo()
+#endif
                 .GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
-#endif
-
-#if NET40
-        private static PropertyInfo HResultProperty => _getHResultProperty.Value;
-
-        private readonly static Lazy<PropertyInfo> _getHResultProperty = new Lazy<PropertyInfo>(() =>
-            typeof(Exception)
-                .GetProperty("HResult", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
-#endif
     }
 }

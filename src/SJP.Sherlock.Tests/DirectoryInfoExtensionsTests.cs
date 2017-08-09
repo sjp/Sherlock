@@ -154,7 +154,7 @@ namespace SJP.Sherlock.Tests
             File.Move(tmpFilePath, tmpDirFile);
 
             var lockedProceses = tmpDir.GetLockingProcesses();
-            Assert.IsTrue(lockedProceses.Count == 0);
+            Assert.IsTrue(!lockedProceses.Any());
 
             tmpDir.Delete(true);
         }

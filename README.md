@@ -9,7 +9,7 @@
 
 [![License (MIT)](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/e603c1hyj2vka7o5?svg=true)](https://ci.appveyor.com/project/sjp/sherlock)
 
-This project uses the Windows Restart Manager APIs to find processes locking one or multiple files. Consequently this is not portable to any platform aside from those running Windows Vista or Windows Server 2008 or newer. It supports .NET Core 1.1, .NET Standard 1.5 and .NET 4.0 or greater.
+This project uses the Windows Restart Manager APIs to find processes locking one or multiple files. Consequently this information is not portable to any platform aside from those running Windows Vista or Windows Server 2008 or newer. It supports .NET Core 1.1, .NET Standard 1.5 and .NET 4.0 or greater.
 
 Inspiration for this project comes from [LockCheck](https://github.com/cklutz/LockCheck), but adds support for .NET Core and .NET Standard, in addition to being more easily distributed as a library. Furthermore, more helper methods have been provided for working with files and directories to determine whether locks are present.
 
@@ -23,8 +23,8 @@ using (var fileStream = exampleFile.Open(FileMode.OpenOrCreate, FileAccess.Write
 {
     bool isLocked = exampleFile.IsFileLocked(); // returns true as example.txt is locked
 
-    // find out who is locking the process, which should describe the current process
-    ISet<IProcessInfo> lockingProcesses = exampleFile.GetLockingProcesses();
+    // find out who is locking the file, which should describe the current process
+    IEnumerable<IProcessInfo> lockingProcesses = exampleFile.GetLockingProcesses();
 }
 ```
 
@@ -35,7 +35,7 @@ var exampleFile = new FileInfo("example.txt");
 using (var fileStream = exampleFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
 {
     // use the RestartManager interface this time
-    ISet<IProcessInfo> lockingProcesses = RestartManager.GetLockingProcesses(exampleFile);
+    IEnumerable<IProcessInfo> lockingProcesses = RestartManager.GetLockingProcesses(exampleFile);
 }
 ```
 
@@ -69,10 +69,10 @@ Aside from the API examples shown earlier the following methods and properties a
 
 ### `Platform.SupportsRestartManager`
 
-If you are unsure whether the platform you're using has access to the Restart Manager API, please use this helper property. Restart Manager is available on all Windows systems that are at least as new as Windows Vista and Windows Server 2008. Any use of the rest of the Sherlock API will result in a `PlatformNotSupportedException` exception being thrown when Restart Manager is not present.
+If you are unsure whether the platform you're using has access to the Restart Manager API, please use this helper property. Restart Manager is available on all Windows systems that are at least as new as Windows Vista and Windows Server 2008. Any use of the rest of the Sherlock API will result in a limited set of data being returned. Information on which files are locked can still be obtained without Restart Manager, but not which processes are locking upon them.
 
 ```csharp
-bool hasRestartManager = Platform.SupportsRestartManager();
+bool hasRestartManager = Platform.SupportsRestartManager;
 ```
 
 ### `IOException.IsFileLocked()`

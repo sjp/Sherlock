@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SJP.Sherlock
 {
@@ -14,8 +15,7 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="fileInfo">A file to test.</param>
         /// <returns>A set of processes that hold a lock on <paramref name="fileInfo"/>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
-        public static ISet<IProcessInfo> GetLockingProcesses(this FileInfo fileInfo)
+        public static IEnumerable<IProcessInfo> GetLockingProcesses(this FileInfo fileInfo)
         {
             if (fileInfo == null)
                 throw new ArgumentNullException(nameof(fileInfo));
@@ -28,13 +28,33 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="fileInfo">A file to test.</param>
         /// <returns><b>True</b> if any processes hold a lock on the file, otherwise <b>false</b>.</returns>
-        /// <exception cref="PlatformNotSupportedException">The Restart Manager API is not supported on the current platform.</exception>
         public static bool IsFileLocked(this FileInfo fileInfo)
         {
             if (fileInfo == null)
                 throw new ArgumentNullException(nameof(fileInfo));
 
-            return RestartManager.GetLockingProcesses(fileInfo.FullName).Count > 0;
+            if (!Platform.SupportsRestartManager)
+                return IsSimpleFileLocked(fileInfo);
+
+            return RestartManager.GetLockingProcesses(fileInfo.FullName).Any();
+        }
+
+        private static bool IsSimpleFileLocked(FileInfo file)
+        {
+            try
+            {
+                using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                    return false;
+            }
+            catch (IOException ex)
+            {
+                return ex.IsFileLocked();
+            }
+            catch
+            {
+                // wasn't due to file locking that an exception was thrown
+                return false;
+            }
         }
     }
 }

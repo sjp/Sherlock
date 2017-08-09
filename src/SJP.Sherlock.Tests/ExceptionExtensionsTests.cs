@@ -92,7 +92,7 @@ namespace SJP.Sherlock.Tests
         public void RethrowWithLockingInformation_GivenValidExceptionAndNullString_ThrowsArgNullException()
         {
             var ex = new Exception();
-            string tmpFile = null;
+            const string tmpFile = null;
             Assert.Throws<ArgumentException>(() => ex.RethrowWithLockingInformation(tmpFile));
         }
 
