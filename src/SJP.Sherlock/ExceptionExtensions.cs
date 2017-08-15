@@ -20,6 +20,7 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="exception">An <see cref="IOException"/> that has been thrown.</param>
         /// <returns><b>True</b> if the exception was thrown due to a lock held on a file, otherwise <b>false</b>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="exception"/> is <b>null</b>.</exception>
         public static bool IsFileLocked(this IOException exception)
         {
             if (exception == null)
@@ -43,6 +44,7 @@ namespace SJP.Sherlock
         /// <param name="exception">The exception that was thrown due to a lock held on a file.</param>
         /// <param name="directory">A directory containing files that could have been locked upon.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files in the directory.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="exception"/> or <paramref name="directory"/> is <b>null</b>.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, DirectoryInfo directory)
         {
             if (exception == null)
@@ -61,6 +63,7 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory containing files that could have been locked upon.</param>
         /// <param name="searchPattern">The search string to match against the names of files.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files in the directory.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="exception"/> or <paramref name="directory"/> is <b>null</b>.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, DirectoryInfo directory, string searchPattern)
         {
             if (exception == null)
@@ -80,6 +83,7 @@ namespace SJP.Sherlock
         /// <param name="searchPattern">The search string to match against the names of files.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include only the current directory or all subdirectories. The default value is <see cref="SearchOption.TopDirectoryOnly"/>.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files in the directory.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="exception"/> or <paramref name="directory"/> is <b>null</b>.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (exception == null)
@@ -106,6 +110,8 @@ namespace SJP.Sherlock
         /// <param name="exception">The exception that was thrown due to a lock held on a file.</param>
         /// <param name="files">A collection of files that could have been locked upon.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="exception"/> or <paramref name="files"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">An entry of the <paramref name="files"/> collection is <b>null</b>.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, IEnumerable<FileInfo> files)
         {
             if (exception == null)
@@ -134,6 +140,8 @@ namespace SJP.Sherlock
         /// <param name="exception">The exception that was thrown due to a lock held on a file.</param>
         /// <param name="fileNames">A collection of file paths that could have been locked upon.</param>
         /// <returns><b>False</b> if the exception was not held due to a lock on a file, or if there are no locked files.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="exception"/> or <paramref name="fileNames"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">An entry of the <paramref name="fileNames"/> collection is <b>null</b>.</exception>
         public static bool RethrowWithLockingInformation(this Exception exception, IEnumerable<string> fileNames)
         {
             if (exception == null)

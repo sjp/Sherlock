@@ -15,6 +15,7 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="fileInfo">A file to test.</param>
         /// <returns>A set of processes that hold a lock on <paramref name="fileInfo"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="fileInfo"/> is <b>null</b>.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(this FileInfo fileInfo)
         {
             if (fileInfo == null)
@@ -28,6 +29,7 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="fileInfo">A file to test.</param>
         /// <returns><b>True</b> if any processes hold a lock on the file, otherwise <b>false</b>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="fileInfo"/> is <b>null</b>.</exception>
         public static bool IsFileLocked(this FileInfo fileInfo)
         {
             if (fileInfo == null)
