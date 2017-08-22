@@ -117,7 +117,7 @@ namespace SJP.Sherlock
             ERROR_SEM_TIMEOUT = 121,
 
             /// <summary>
-            /// One or more arguments are not correct. This error value is returned by the Restart Manager function if a <b>NULL</b> pointer or 0 is passed in a parameter that requires a non-<b>null</b> and non-zero value.
+            /// One or more arguments are not correct. This error value is returned by the Restart Manager function if a <c>null</c> pointer or 0 is passed in a parameter that requires a non-<c>null</c> and non-zero value.
             /// </summary>
             ERROR_BAD_ARGUMENTS = 160,
 
@@ -304,7 +304,7 @@ namespace SJP.Sherlock
             public uint TSSessionId;
 
             /// <summary>
-            /// <b>TRUE</b> if the application can be restarted by the Restart Manager; otherwise, <b>FALSE</b>. This member is always <b>TRUE</b> if the process is a service. This member is always <b>FALSE</b> if the process is a critical system process.
+            /// <c>true</c> if the application can be restarted by the Restart Manager; otherwise, <c>false</c>. This member is always <c>true</c> if the process is a service. This member is always <c>false</c> if the process is a critical system process.
             /// </summary>
             [MarshalAs(UnmanagedType.Bool)]
             public bool bRestartable;

@@ -43,7 +43,7 @@ namespace SJP.Sherlock
         uint TerminalServicesSessionId { get; }
 
         /// <summary>
-        /// <b>True</b> if the application can be restarted by the Restart Manager; otherwise, <b>false</b>. This member is always <b>true</b> if the process is a service. This member is always <b>false</b> if the process is a critical system process.
+        /// <c>true</c> if the application can be restarted by the Restart Manager; otherwise, <c>false</c>. This member is always <c>true</c> if the process is a service. This member is always <c>false</c> if the process is a critical system process.
         /// </summary>
         bool Restartable { get; }
     }

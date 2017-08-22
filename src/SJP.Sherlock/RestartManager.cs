@@ -17,7 +17,7 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="directory">A directory to search for locked files.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(DirectoryInfo directory)
         {
             if (directory == null)
@@ -44,7 +44,7 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory to search for locked files.</param>
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -72,7 +72,7 @@ namespace SJP.Sherlock
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
@@ -105,8 +105,8 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="files">A set of files to test for a process holding a lock.</param>
         /// <returns>A set of processes that lock upon one or more files in <paramref name="files"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="files"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="files"/> contains a <b>null</b> value.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="files"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="files"/> contains a <c>null</c> value.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(IEnumerable<FileInfo> files)
         {
             if (files == null)
@@ -133,8 +133,8 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="paths">A set of file paths to test for a process holding a lock.</param>
         /// <returns>A set of processes that lock upon one or more files in <paramref name="paths"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="paths"/> is <b>null</b>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="paths"/> contains a <b>null</b> value.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="paths"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="paths"/> contains a <c>null</c> value.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(IEnumerable<string> paths)
         {
             if (paths == null)

@@ -15,7 +15,7 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="directory">A directory to search for locked files.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory)
         {
             if (directory == null)
@@ -31,7 +31,7 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory to search for locked files.</param>
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -48,7 +48,7 @@ namespace SJP.Sherlock
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
@@ -63,7 +63,7 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="directory">A directory to search for locked files.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<FileInfo> EnumerateLockedFiles(this DirectoryInfo directory)
         {
             if (directory == null)
@@ -80,7 +80,7 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory to search for locked files.</param>
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<FileInfo> EnumerateLockedFiles(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -98,7 +98,7 @@ namespace SJP.Sherlock
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<FileInfo> EnumerateLockedFiles(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
@@ -114,7 +114,7 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="directory">A directory to search for locked files.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(this DirectoryInfo directory)
         {
             if (directory == null)
@@ -138,7 +138,7 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory to search for locked files.</param>
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -163,7 +163,7 @@ namespace SJP.Sherlock
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
         /// <returns>A set of processes that lock upon one or more files in the <paramref name="directory"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static IEnumerable<IProcessInfo> GetLockingProcesses(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
@@ -185,8 +185,8 @@ namespace SJP.Sherlock
         /// Determines whether any files in a directory are locked by a process.
         /// </summary>
         /// <param name="directory">A directory to search for locked files.</param>
-        /// <returns><b>True</b> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <b>false</b>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <returns><c>true</c> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static bool ContainsLockedFiles(this DirectoryInfo directory)
         {
             if (directory == null)
@@ -202,8 +202,8 @@ namespace SJP.Sherlock
         /// </summary>
         /// <param name="directory">A directory to search for locked files.</param>
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
-        /// <returns><b>True</b> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <b>false</b>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <returns><c>true</c> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static bool ContainsLockedFiles(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
@@ -220,8 +220,8 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory to search for locked files.</param>
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
-        /// <returns><b>True</b> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <b>false</b>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <b>null</b>.</exception>
+        /// <returns><c>true</c> if any of the files in <paramref name="directory"/> are locked by a process, otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
         public static bool ContainsLockedFiles(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
