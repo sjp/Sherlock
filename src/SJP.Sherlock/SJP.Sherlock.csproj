@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net40;net45;net451;netcoreapp1.1;netstandard1.5</TargetFrameworks>
-    <!-- Don't reference the full NETStandard.Library -->
-    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -11,29 +9,12 @@
     <Company />
     <Product />
     <Description>Easily find out which processes are holding locks on files.</Description>
-    <Copyright>Copyright © Simon Potter 2017</Copyright>
+    <Copyright>Copyright © Simon Potter 2018</Copyright>
     <PackageLicenseUrl>https://raw.github.com/sjp/Sherlock/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/sjp/Sherlock</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sjp/Sherlock</RepositoryUrl>
     <PackageIconUrl>https://raw.github.com/sjp/Sherlock/master/sherlock.svg</PackageIconUrl>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40'">
-    <DefineConstants>$(DefineConstants);NET40</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' Or '$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'net451' ">
-    <DefineConstants>$(DefineConstants);NETFX</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' Or '$(TargetFramework)' == 'net45' Or '$(TargetFramework)' == 'net451' ">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Enums.NET" Version="2.3.1" />
