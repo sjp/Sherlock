@@ -8,41 +8,41 @@ using NUnit.Framework;
 namespace SJP.Sherlock.Tests
 {
     [TestFixture]
-    public class RestartManagerTests
+    internal static class RestartManagerTests
     {
         [Test]
-        public void GetLockingProcesses_WhenGivenNullStringArgs_ThrowsArgNullException()
+        public static void GetLockingProcesses_WhenGivenNullStringArgs_ThrowsArgNullException()
         {
             Assert.Throws<ArgumentNullException>(() => RestartManager.GetLockingProcesses((IEnumerable<string>)null));
         }
 
         [Test]
-        public void GetLockingProcesses_WhenGivenNullFileInfoArgs_ThrowsArgNullException()
+        public static void GetLockingProcesses_WhenGivenNullFileInfoArgs_ThrowsArgNullException()
         {
             Assert.Throws<ArgumentNullException>(() => RestartManager.GetLockingProcesses((IEnumerable<FileInfo>)null));
         }
 
         [Test]
-        public void GetLockingProcesses_WhenGivenNullDirectoryInfoArgs_ThrowsArgNullException()
+        public static void GetLockingProcesses_WhenGivenNullDirectoryInfoArgs_ThrowsArgNullException()
         {
             Assert.Throws<ArgumentNullException>(() => RestartManager.GetLockingProcesses((DirectoryInfo)null));
         }
 
         [Test]
-        public void GetLockingProcesses_WhenLockingOnPathAndGivenString_ReturnsNonEmptyLockingSet()
+        public static void GetLockingProcesses_WhenLockingOnPathAndGivenString_ReturnsNonEmptyLockingSet()
         {
             var tmpPath = Path.GetTempFileName();
             using (var file = File.Open(tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                Assert.IsTrue(lockingProcs.Any());
+                Assert.IsTrue(lockingProcs.Count > 0);
             }
 
             File.Delete(tmpPath);
         }
 
         [Test]
-        public void GetLockingProcesses_WhenLockingOnPathAndGivenString_ReturnsCorrectProcess()
+        public static void GetLockingProcesses_WhenLockingOnPathAndGivenString_ReturnsCorrectProcess()
         {
             var tmpPath = Path.GetTempFileName();
             using (var file = File.Open(tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
@@ -60,7 +60,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void GetLockingProcesses_WhenLockingOnPathAndGivenDirectory_ReturnsNonEmptyLockingSet()
+        public static void GetLockingProcesses_WhenLockingOnPathAndGivenDirectory_ReturnsNonEmptyLockingSet()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -74,14 +74,14 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockingProcs = RestartManager.GetLockingProcesses(tmpDir);
-                Assert.IsTrue(lockingProcs.Any());
+                Assert.IsTrue(lockingProcs.Count > 0);
             }
 
             tmpDir.Delete(true);
         }
 
         [Test]
-        public void GetLockingProcesses_WhenLockingOnPathAndGivenDirectory_ReturnsCorrectProcess()
+        public static void GetLockingProcesses_WhenLockingOnPathAndGivenDirectory_ReturnsCorrectProcess()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -107,21 +107,21 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void GetLockingProcesses_WhenGivenEmptyStringCollection_ReturnsEmptyResult()
+        public static void GetLockingProcesses_WhenGivenEmptyStringCollection_ReturnsEmptyResult()
         {
             var arg = new List<string>();
             var result = RestartManager.GetLockingProcesses(arg);
 
-            Assert.AreEqual(0, result.Count());
+            Assert.AreEqual(0, result.Count);
         }
 
         [Test]
-        public void GetLockingProcesses_WhenGivenEmptyFileInfoCollection_ReturnsEmptyResult()
+        public static void GetLockingProcesses_WhenGivenEmptyFileInfoCollection_ReturnsEmptyResult()
         {
             var arg = new List<FileInfo>();
             var result = RestartManager.GetLockingProcesses(arg);
 
-            Assert.AreEqual(0, result.Count());
+            Assert.AreEqual(0, result.Count);
         }
     }
 }

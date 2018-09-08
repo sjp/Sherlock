@@ -47,8 +47,7 @@ namespace SJP.Sherlock
             {
                 var hash = 17;
                 hash = (hash * 23) + ProcessId.GetHashCode();
-                hash = (hash * 23) + StartTime.GetHashCode();
-                return hash;
+                return (hash * 23) + StartTime.GetHashCode();
             }
         }
 
@@ -57,7 +56,7 @@ namespace SJP.Sherlock
             if (ReferenceEquals(a, b))
                 return true;
 
-            if (ReferenceEquals(a, null) ^ ReferenceEquals(b, null))
+            if (a is null ^ b is null)
                 return false;
 
             return a.Equals(b);
@@ -68,7 +67,7 @@ namespace SJP.Sherlock
             if (ReferenceEquals(a, b))
                 return false;
 
-            if (ReferenceEquals(a, null) ^ ReferenceEquals(b, null))
+            if (a is null ^ b is null)
                 return true;
 
             return !a.Equals(b);

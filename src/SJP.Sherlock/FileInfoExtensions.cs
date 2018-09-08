@@ -16,7 +16,7 @@ namespace SJP.Sherlock
         /// <param name="fileInfo">A file to test.</param>
         /// <returns>A set of processes that hold a lock on <paramref name="fileInfo"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="fileInfo"/> is <c>null</c>.</exception>
-        public static IEnumerable<IProcessInfo> GetLockingProcesses(this FileInfo fileInfo)
+        public static IReadOnlyCollection<IProcessInfo> GetLockingProcesses(this FileInfo fileInfo)
         {
             if (fileInfo == null)
                 throw new ArgumentNullException(nameof(fileInfo));
@@ -38,7 +38,7 @@ namespace SJP.Sherlock
             if (!Platform.SupportsRestartManager)
                 return IsSimpleFileLocked(fileInfo);
 
-            return RestartManager.GetLockingProcesses(fileInfo.FullName).Any();
+            return RestartManager.GetLockingProcesses(fileInfo.FullName).Count > 0;
         }
 
         private static bool IsSimpleFileLocked(FileInfo file)

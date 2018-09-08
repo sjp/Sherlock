@@ -151,26 +151,25 @@ namespace SJP.Sherlock
             if (fileNames.Any(f => f == null))
                 throw new ArgumentException("A null filename was provided.", nameof(fileNames));
 
-            var ioex = exception as IOException;
-            if (ioex == null || !ioex.IsFileLocked())
+            if (!(exception is IOException ioex) || !ioex.IsFileLocked())
                 return false;
 
             var lockers = RestartManager.GetLockingProcesses(fileNames);
-            if (!lockers.Any())
+            if (lockers.Count == 0)
                 return false;
 
             const int max = 10;
-            var sb = new StringBuilder();
-            sb.Append(exception.Message);
-            sb.Append(" ");
+            var builder = new StringBuilder();
+            builder.Append(exception.Message);
+            builder.Append(" ");
 
             var message = FormatLockingMessage(lockers, fileNames, max);
-            sb.Append(message);
+            builder.Append(message);
 
             // Unable to set HResult *and* InnerException via public methods/ctors.
             // Must use reflection to set the HResult while using the ctor to set the InnerException.
             // Nasty but necessary.
-            var ex = new IOException(sb.ToString(), exception);
+            var ex = new IOException(builder.ToString(), exception);
             SetErrorCodeMethod?.Invoke(ex, new object[] { Marshal.GetHRForException(exception) });
 
             throw ex;
@@ -196,7 +195,7 @@ namespace SJP.Sherlock
             else
                 builder.AppendFormat("Files [{0}] locked by: ", string.Join(", ", fileNameList));
 
-            var truncatedLockers = lockerList.Take(max ?? Int32.MaxValue);
+            var truncatedLockers = lockerList.Take(max ?? int.MaxValue);
             foreach (var locker in truncatedLockers)
             {
                 builder
@@ -224,10 +223,6 @@ namespace SJP.Sherlock
         private static MethodInfo SetErrorCodeMethod => _setErrorCodeMethod.Value;
 
         private readonly static Lazy<MethodInfo> _setErrorCodeMethod = new Lazy<MethodInfo>(() =>
-            typeof(Exception)
-#if !NETFX
-                .GetTypeInfo()
-#endif
-                .GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
+            typeof(Exception).GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
     }
 }

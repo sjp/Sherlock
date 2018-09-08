@@ -16,7 +16,7 @@ namespace SJP.Sherlock
         /// <param name="directory">A directory to search for locked files.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
         /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
-        public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory)
+        public static IReadOnlyCollection<FileInfo> GetLockedFiles(this DirectoryInfo directory)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory));
@@ -32,7 +32,7 @@ namespace SJP.Sherlock
         /// <param name="searchPattern">The search string to match against the names of files in the directory.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
         /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
-        public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory, string searchPattern)
+        public static IReadOnlyCollection<FileInfo> GetLockedFiles(this DirectoryInfo directory, string searchPattern)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory));
@@ -49,7 +49,7 @@ namespace SJP.Sherlock
         /// <param name="searchOption">One of the enumeration values that specifies whether the search operation should include all subdirectories or only the current directory.</param>
         /// <returns>A collection of locked files, which may be empty (i.e. no locked files found).</returns>
         /// <exception cref="ArgumentNullException"><paramref name="directory"/> is <c>null</c>.</exception>
-        public static IEnumerable<FileInfo> GetLockedFiles(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
+        public static IReadOnlyCollection<FileInfo> GetLockedFiles(this DirectoryInfo directory, string searchPattern, SearchOption searchOption)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory));

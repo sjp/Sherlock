@@ -7,38 +7,38 @@ using NUnit.Framework;
 namespace SJP.Sherlock.Tests
 {
     [TestFixture]
-    public class DirectoryInfoExtensionsTests
+    internal static class DirectoryInfoExtensionsTests
     {
         [Test]
-        public void GetLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
+        public static void GetLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
         {
             DirectoryInfo tmp = null;
             Assert.Throws<ArgumentNullException>(() => tmp.GetLockedFiles());
         }
 
         [Test]
-        public void EnumerateLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
+        public static void EnumerateLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
         {
             DirectoryInfo tmp = null;
             Assert.Throws<ArgumentNullException>(() => tmp.EnumerateLockedFiles());
         }
 
         [Test]
-        public void GetLockingProcesses_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
+        public static void GetLockingProcesses_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
         {
             DirectoryInfo tmp = null;
             Assert.Throws<ArgumentNullException>(() => tmp.GetLockingProcesses());
         }
 
         [Test]
-        public void ContainsLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
+        public static void ContainsLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
         {
             DirectoryInfo tmp = null;
             Assert.Throws<ArgumentNullException>(() => tmp.ContainsLockedFiles());
         }
 
         [Test]
-        public void GetLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
+        public static void GetLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -52,14 +52,14 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockedFiles = tmpDir.GetLockedFiles();
-                Assert.IsTrue(lockedFiles.Any());
+                Assert.IsTrue(lockedFiles.Count > 0);
             }
 
             tmpDir.Delete(true);
         }
 
         [Test]
-        public void GetLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsEmptyList()
+        public static void GetLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsEmptyList()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -71,13 +71,13 @@ namespace SJP.Sherlock.Tests
             File.Move(tmpFilePath, tmpDirFile);
 
             var lockedFiles = tmpDir.GetLockedFiles();
-            Assert.IsFalse(lockedFiles.Any());
+            Assert.IsFalse(lockedFiles.Count > 0);
 
             tmpDir.Delete(true);
         }
 
         [Test]
-        public void EnumerateLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
+        public static void EnumerateLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -98,7 +98,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void EnumerateLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsEmptyList()
+        public static void EnumerateLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsEmptyList()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -116,7 +116,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void GetLockingProcesses_WhenLockingOnPathInDirectory_ReturnsCorrectProcess()
+        public static void GetLockingProcesses_WhenLockingOnPathInDirectory_ReturnsCorrectProcess()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -142,7 +142,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void GetLockingProcesses_WhenNotLockingOnPathInDirectory_ReturnsEmptySet()
+        public static void GetLockingProcesses_WhenNotLockingOnPathInDirectory_ReturnsEmptySet()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -160,7 +160,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void ContainsLockedFiles_WhenLockingOnPathInDirectory_ReturnsTrue()
+        public static void ContainsLockedFiles_WhenLockingOnPathInDirectory_ReturnsTrue()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
@@ -181,7 +181,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void ContainsLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsFalse()
+        public static void ContainsLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsFalse()
         {
             var tmpFilePath = Path.GetTempFileName();
             var tmpDirPath = Path.GetDirectoryName(tmpFilePath);

@@ -5,24 +5,24 @@ using NUnit.Framework;
 namespace SJP.Sherlock.Tests
 {
     [TestFixture]
-    public class ExceptionExtensionsTests
+    internal static class ExceptionExtensionsTests
     {
         [Test]
-        public void IsFileLocked_GivenNullIOException_ThrowsArgNullException()
+        public static void IsFileLocked_GivenNullIOException_ThrowsArgNullException()
         {
             IOException ex = null;
             Assert.Throws<ArgumentNullException>(() => ex.IsFileLocked());
         }
 
         [Test]
-        public void IsFileLocked_GivenRegularIOException_ReturnsFalse()
+        public static void IsFileLocked_GivenRegularIOException_ReturnsFalse()
         {
             var ex = new IOException("test");
             Assert.IsFalse(ex.IsFileLocked());
         }
 
         [Test]
-        public void IsFileLocked_GivenLockingIOException_ReturnsTrue()
+        public static void IsFileLocked_GivenLockingIOException_ReturnsTrue()
         {
             var tmpPath = new FileInfo(Path.GetTempFileName());
             try
@@ -43,7 +43,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenNullExceptionAndValidDirectory_ThrowsArgNullException()
+        public static void RethrowWithLockingInformation_GivenNullExceptionAndValidDirectory_ThrowsArgNullException()
         {
             Exception ex = null;
             var tmpPath = new DirectoryInfo(Path.GetTempPath());
@@ -51,7 +51,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenValidExceptionAndNullDirectory_ThrowsArgNullException()
+        public static void RethrowWithLockingInformation_GivenValidExceptionAndNullDirectory_ThrowsArgNullException()
         {
             var ex = new Exception();
             DirectoryInfo tmpPath = null;
@@ -59,7 +59,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenNullExceptionAndValidFileInfo_ThrowsArgNullException()
+        public static void RethrowWithLockingInformation_GivenNullExceptionAndValidFileInfo_ThrowsArgNullException()
         {
             Exception ex = null;
             var tmpFile = new FileInfo(Path.GetTempFileName());
@@ -70,7 +70,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenValidExceptionAndNullFileInfo_ThrowsArgNullException()
+        public static void RethrowWithLockingInformation_GivenValidExceptionAndNullFileInfo_ThrowsArgNullException()
         {
             var ex = new Exception();
             FileInfo tmpFile = null;
@@ -78,7 +78,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenNullExceptionAndValidString_ThrowsArgNullException()
+        public static void RethrowWithLockingInformation_GivenNullExceptionAndValidString_ThrowsArgNullException()
         {
             Exception ex = null;
             var tmpFile = Path.GetTempFileName();
@@ -89,7 +89,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenValidExceptionAndNullString_ThrowsArgNullException()
+        public static void RethrowWithLockingInformation_GivenValidExceptionAndNullString_ThrowsArgNullException()
         {
             var ex = new Exception();
             const string tmpFile = null;
@@ -97,7 +97,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenNonIOException_ReturnsFalse()
+        public static void RethrowWithLockingInformation_GivenNonIOException_ReturnsFalse()
         {
             var ex = new Exception("test");
             var tmpPath = new DirectoryInfo(Path.GetTempPath());
@@ -108,7 +108,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenIOExceptionWithNoLockedFiles_ReturnsFalse()
+        public static void RethrowWithLockingInformation_GivenIOExceptionWithNoLockedFiles_ReturnsFalse()
         {
             var tmpPath = new FileInfo(Path.GetTempFileName());
             try
@@ -131,7 +131,7 @@ namespace SJP.Sherlock.Tests
         }
 
         [Test]
-        public void RethrowWithLockingInformation_GivenLockingIOException_ReturnsTrue()
+        public static void RethrowWithLockingInformation_GivenLockingIOException_ReturnsTrue()
         {
             var tmpPath = new FileInfo(Path.GetTempFileName());
             try

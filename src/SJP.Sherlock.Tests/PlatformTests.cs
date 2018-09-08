@@ -4,10 +4,10 @@ using NUnit.Framework;
 namespace SJP.Sherlock.Tests
 {
     [TestFixture]
-    public class PlatformTests
+    internal static class PlatformTests
     {
         [Test]
-        public void SupportsRestartManager_WhenRunningWindowsAndAtLeastVista_ReturnsTrue()
+        public static void SupportsRestartManager_WhenRunningWindowsAndAtLeastVista_ReturnsTrue()
         {
             var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
