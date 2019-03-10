@@ -9,15 +9,21 @@
     <Company />
     <Product />
     <Description>Easily find out which processes are holding locks on files.</Description>
-    <Copyright>Copyright © Simon Potter 2018</Copyright>
+    <Copyright>Copyright © Simon Potter 2019</Copyright>
     <PackageLicenseUrl>https://raw.github.com/sjp/Sherlock/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/sjp/Sherlock</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sjp/Sherlock</RepositoryUrl>
     <PackageIconUrl>https://raw.github.com/sjp/Sherlock/master/sherlock.svg</PackageIconUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Enums.NET" Version="2.3.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

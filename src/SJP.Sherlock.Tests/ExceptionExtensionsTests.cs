@@ -27,10 +27,9 @@ namespace SJP.Sherlock.Tests
             var tmpPath = new FileInfo(Path.GetTempFileName());
             try
             {
-                var dummy = string.Empty;
                 using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                 using (var innerFile = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-                    dummy = "won't get here";
+                    _ = "won't get here";
 
                 Assert.Fail("The file locking did not throw an exception when it should have.");
             }
@@ -113,10 +112,9 @@ namespace SJP.Sherlock.Tests
             var tmpPath = new FileInfo(Path.GetTempFileName());
             try
             {
-                var dummy = string.Empty;
                 using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                 using (var innerFile = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-                    dummy = "won't get here";
+                    _ = "won't get here";
 
                 Assert.Fail("The file locking did not throw an exception when it should have.");
             }
@@ -136,10 +134,9 @@ namespace SJP.Sherlock.Tests
             var tmpPath = new FileInfo(Path.GetTempFileName());
             try
             {
-                var dummy = string.Empty;
                 using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                 using (var innerFile = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-                    dummy = "won't get here";
+                    _ = "won't get here";
 
                 Assert.Fail("The file locking did not throw an exception when it should have.");
             }
