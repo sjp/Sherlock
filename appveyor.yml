@@ -15,8 +15,8 @@ build:
   verbosity: minimal
 
 test_script:
-  - dotnet test src/SJP.Sherlock.Tests/SJP.Sherlock.Tests.csproj --configuration Release --logger:trx;LogFileName=SJP.Sherlock.Tests.results.xml
-  - ps: build/uploadtests.ps1 "src/SJP.Sherlock.Tests/TestResults/SJP.Sherlock.Tests.results.xml"
+  - dotnet test src\SJP.Sherlock.Tests\SJP.Sherlock.Tests.csproj --configuration Release --logger "trx;LogFileName=SJP.Sherlock.Tests.results.xml"
+  - ps: build\uploadtests.ps1 src\SJP.Sherlock.Tests\TestResults\SJP.Sherlock.Tests.results*.xml
 
 notifications:
 - provider: Email
