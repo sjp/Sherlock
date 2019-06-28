@@ -1,8 +1,8 @@
 <h1 align="center">
-	<br>
-	<img width="200" height="200" src="sherlock.png" alt="Sherlock">
-	<br>
-	<br>
+    <br>
+    <img width="200" height="200" src="sherlock.png" alt="Sherlock">
+    <br>
+    <br>
 </h1>
 
 > Easily find out which processes are holding locks on files.
@@ -79,7 +79,7 @@ Determines whether an `IOException` was thrown as a result of a file being locke
 
 ### `Exception.RethrowWithLockingInformation()`
 
-When given a directory or a list of files that can be locked, this will rethrow the exception with more information on which files are locked and which processes are locking them. Otherwise, if there are no locked files it will simply return `false` and not throw and exception.
+When given a directory or a list of files that can be locked, this will rethrow the exception with more information on which files are locked and which processes are locking them. Otherwise, if there are no locked files it will simply return `false` and not throw an exception.
 
 ## Icon
 
