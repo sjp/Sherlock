@@ -244,7 +244,7 @@ namespace SJP.Sherlock
                 ? _win32ErrorMessages[errorCode]
                 : string.Format("0x{0:x8}", errorCodeNumber);
 
-            throw new Win32Exception(errorCodeNumber, $"{ message } ({ apiName }() error { errorCodeNumber.ToString() }: { reason })");
+            return new Win32Exception(errorCodeNumber, $"{ message } ({ apiName }() error { errorCodeNumber.ToString() }: { reason })");
         }
 
         private static readonly IDictionary<WinErrorCode, string> _win32ErrorMessages = new Dictionary<WinErrorCode, string>
