@@ -11,7 +11,7 @@ namespace SJP.Sherlock
         /// <summary>
         /// The application is in a state that is not described by any other enumerated state.
         /// </summary>
-        Unknown = 0x0,
+        None = 0x0,
 
         /// <summary>
         /// The application is currently running.

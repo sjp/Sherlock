@@ -53,7 +53,7 @@ namespace SJP.Sherlock
 
         public static bool operator ==(ProcessInfo a, ProcessInfo b)
         {
-            if (ReferenceEquals(a, b))
+            if (a is null && b is null)
                 return true;
 
             if (a is null ^ b is null)
@@ -64,7 +64,7 @@ namespace SJP.Sherlock
 
         public static bool operator !=(ProcessInfo a, ProcessInfo b)
         {
-            if (ReferenceEquals(a, b))
+            if (a is null && b is null)
                 return false;
 
             if (a is null ^ b is null)
