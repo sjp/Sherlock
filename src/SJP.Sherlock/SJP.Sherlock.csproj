@@ -2,14 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <TreatSpecificWarningsAsErrors />
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <Authors>Simon Potter</Authors>
-    <Company />
-    <Product />
     <Description>Easily find out which processes are holding locks on files.</Description>
-    <Copyright>Copyright © Simon Potter 2019</Copyright>
     <PackageLicenseUrl>https://raw.github.com/sjp/Sherlock/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/sjp/Sherlock</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sjp/Sherlock</RepositoryUrl>
