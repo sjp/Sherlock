@@ -56,7 +56,7 @@ namespace SJP.Sherlock
             if (a is null && b is null)
                 return true;
 
-            if (a is null ^ b is null)
+            if (a is null || b is null)
                 return false;
 
             return a.Equals(b);
@@ -67,7 +67,7 @@ namespace SJP.Sherlock
             if (a is null && b is null)
                 return false;
 
-            if (a is null ^ b is null)
+            if (a is null || b is null)
                 return true;
 
             return !a.Equals(b);

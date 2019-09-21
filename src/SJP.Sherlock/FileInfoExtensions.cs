@@ -45,7 +45,7 @@ namespace SJP.Sherlock
         {
             try
             {
-                using (var stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
+                using (_ = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
                     return false;
             }
             catch (IOException ex)

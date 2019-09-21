@@ -176,7 +176,7 @@ namespace SJP.Sherlock
                     errorCode = RmGetList(handle, out var pnProcInfoNeeded, ref pnProcInfo, rgAffectedApps, ref lpdwRebootReasons).ToErrorCode();
                     if (errorCode == WinErrorCode.ERROR_SUCCESS)
                     {
-                        if (pnProcInfo == 0)
+                        if (pnProcInfo == 0 || rgAffectedApps == null)
                             return Array.Empty<IProcessInfo>();
 
                         var lockInfos = new List<IProcessInfo>((int)pnProcInfo);
