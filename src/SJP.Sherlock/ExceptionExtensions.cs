@@ -170,7 +170,8 @@ namespace SJP.Sherlock
             // Must use reflection to set the HResult while using the ctor to set the InnerException.
             // Nasty but necessary.
             var ex = new IOException(builder.ToString(), exception);
-            SetErrorCodeMethod?.Invoke(ex, new object[] { Marshal.GetHRForException(exception) });
+            var hresult = Marshal.GetHRForException(exception);
+            SetHResultMethod?.Invoke(ex, new object[] { hresult });
 
             throw ex;
         }
@@ -182,7 +183,7 @@ namespace SJP.Sherlock
 
             var lockerList = lockers.ToList();
 
-            fileNames = fileNames ?? Enumerable.Empty<string>();
+            fileNames ??= Enumerable.Empty<string>();
             var fileNameList = fileNames.ToList();
             if (fileNameList.Count == 0)
                 throw new ArgumentException("At least one filename must be provided, none given.", nameof(fileNames));
@@ -220,9 +221,12 @@ namespace SJP.Sherlock
             return builder.ToString();
         }
 
-        private static MethodInfo SetErrorCodeMethod => _setErrorCodeMethod.Value;
+        private static MethodInfo? SetHResultMethod => _setHResultMethod.Value;
 
-        private readonly static Lazy<MethodInfo> _setErrorCodeMethod = new Lazy<MethodInfo>(() =>
-            typeof(Exception).GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod));
+        private readonly static Lazy<MethodInfo?> _setHResultMethod = new Lazy<MethodInfo?>(() =>
+        {
+            var errorCodeMethod = typeof(Exception).GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod);
+            return errorCodeMethod ?? typeof(Exception).GetProperty(nameof(Exception.HResult), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetSetMethod(true);
+        });
     }
 }

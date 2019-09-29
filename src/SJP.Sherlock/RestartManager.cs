@@ -168,7 +168,7 @@ namespace SJP.Sherlock
                 // Repeated calls to RmGetList will often be required.
                 // Keep calling until ERROR_MORE_DATA is no longer returned or max # of retries is reached, whichever is first.
                 uint pnProcInfo = 0;
-                RM_PROCESS_INFO[] rgAffectedApps = null;
+                RM_PROCESS_INFO[]? rgAffectedApps = null;
                 int retry = 0;
                 do
                 {

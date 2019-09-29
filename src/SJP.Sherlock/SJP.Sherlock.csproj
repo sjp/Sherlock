@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <Description>Easily find out which processes are holding locks on files.</Description>
     <PackageLicenseUrl>https://raw.github.com/sjp/Sherlock/master/LICENSE</PackageLicenseUrl>
@@ -10,6 +10,7 @@
     <PackageIconUrl>https://raw.github.com/sjp/Sherlock/master/sherlock.svg</PackageIconUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

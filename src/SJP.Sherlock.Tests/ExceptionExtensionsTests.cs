@@ -144,8 +144,8 @@ namespace SJP.Sherlock.Tests
             {
                 try
                 {
-                    using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-                        ex.RethrowWithLockingInformation(tmpPath);
+                    using var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+                    ex.RethrowWithLockingInformation(tmpPath);
                 }
                 catch (IOException innerEx)
                 {

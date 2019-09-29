@@ -51,7 +51,7 @@ namespace SJP.Sherlock
             }
         }
 
-        public static bool operator ==(ProcessInfo a, ProcessInfo b)
+        public static bool operator ==(ProcessInfo? a, ProcessInfo? b)
         {
             if (a is null && b is null)
                 return true;
@@ -62,7 +62,7 @@ namespace SJP.Sherlock
             return a.Equals(b);
         }
 
-        public static bool operator !=(ProcessInfo a, ProcessInfo b)
+        public static bool operator !=(ProcessInfo? a, ProcessInfo? b)
         {
             if (a is null && b is null)
                 return false;
@@ -92,7 +92,7 @@ namespace SJP.Sherlock
             if (ReferenceEquals(this, obj))
                 return true;
 
-            return Equals(obj as ProcessInfo);
+            return obj is ProcessInfo procInfo && Equals(procInfo);
         }
 
         public override string ToString() => ProcessId.ToString() + "@" + StartTime.ToString("o");
