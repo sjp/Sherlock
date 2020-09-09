@@ -24,11 +24,11 @@ namespace SJP.Sherlock.Tests
         [Test, TestPlatform.Windows]
         public static void IsFileLocked_GivenLockingIOException_ReturnsTrue()
         {
-            var tmpPath = new FileInfo(Path.GetTempFileName());
+            using var tmpPath = new TemporaryFile();
             try
             {
-                using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-                using (var innerFile = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+                using (var file = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+                using (var innerFile = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                     _ = "won't get here";
 
                 Assert.Fail("The file locking did not throw an exception when it should have.");
@@ -37,16 +37,14 @@ namespace SJP.Sherlock.Tests
             {
                 Assert.That(ex.IsFileLocked(), Is.True);
             }
-
-            tmpPath.Delete();
         }
 
         [Test]
         public static void RethrowWithLockingInformation_GivenNullExceptionAndValidDirectory_ThrowsArgNullException()
         {
             Exception ex = null;
-            var tmpPath = new DirectoryInfo(Path.GetTempPath());
-            Assert.That(() => ex.RethrowWithLockingInformation(tmpPath), Throws.ArgumentNullException);
+            using var tmpDir = new TemporaryDirectory();
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpDir.DirectoryInfo), Throws.ArgumentNullException);
         }
 
         [Test]
@@ -61,11 +59,9 @@ namespace SJP.Sherlock.Tests
         public static void RethrowWithLockingInformation_GivenNullExceptionAndValidFileInfo_ThrowsArgNullException()
         {
             Exception ex = null;
-            var tmpFile = new FileInfo(Path.GetTempFileName());
+            using var tmpPath = new TemporaryFile();
 
-            Assert.That(() => ex.RethrowWithLockingInformation(tmpFile), Throws.ArgumentNullException);
-
-            tmpFile.Delete();
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpPath.FileInfo), Throws.ArgumentNullException);
         }
 
         [Test]
@@ -80,11 +76,9 @@ namespace SJP.Sherlock.Tests
         public static void RethrowWithLockingInformation_GivenNullExceptionAndValidString_ThrowsArgNullException()
         {
             Exception ex = null;
-            var tmpFile = Path.GetTempFileName();
+            using var tmpPath = new TemporaryFile();
 
-            Assert.That(() => ex.RethrowWithLockingInformation(tmpFile), Throws.ArgumentNullException);
-
-            File.Delete(tmpFile);
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpPath.FilePath), Throws.ArgumentNullException);
         }
 
         [Test]
@@ -99,9 +93,9 @@ namespace SJP.Sherlock.Tests
         public static void RethrowWithLockingInformation_GivenNonIOException_ReturnsFalse()
         {
             var ex = new Exception("test");
-            var tmpPath = new DirectoryInfo(Path.GetTempPath());
+            using var tmpDir = new TemporaryDirectory();
 
-            var result = ex.RethrowWithLockingInformation(tmpPath);
+            var result = ex.RethrowWithLockingInformation(tmpDir.DirectoryPath);
 
             Assert.That(result, Is.False);
         }
@@ -109,33 +103,31 @@ namespace SJP.Sherlock.Tests
         [Test]
         public static void RethrowWithLockingInformation_GivenIOExceptionWithNoLockedFiles_ReturnsFalse()
         {
-            var tmpPath = new FileInfo(Path.GetTempFileName());
+            using var tmpPath = new TemporaryFile();
             try
             {
-                using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-                using (var innerFile = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+                using (var file = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+                using (var innerFile = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                     _ = "won't get here";
 
                 Assert.Fail("The file locking did not throw an exception when it should have.");
             }
             catch (IOException ex)
             {
-                var result = ex.RethrowWithLockingInformation(tmpPath);
+                var result = ex.RethrowWithLockingInformation(tmpPath.FileInfo);
 
                 Assert.That(result, Is.False);
             }
-
-            tmpPath.Delete();
         }
 
         [Test]
         public static void RethrowWithLockingInformation_GivenLockingIOException_ReturnsTrue()
         {
-            var tmpPath = new FileInfo(Path.GetTempFileName());
+            using var tmpPath = new TemporaryFile();
             try
             {
-                using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-                using (var innerFile = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+                using (var file = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+                using (var innerFile = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                     _ = "won't get here";
 
                 Assert.Fail("The file locking did not throw an exception when it should have.");
@@ -144,8 +136,8 @@ namespace SJP.Sherlock.Tests
             {
                 try
                 {
-                    using var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
-                    ex.RethrowWithLockingInformation(tmpPath);
+                    using var _ = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+                    ex.RethrowWithLockingInformation(tmpPath.FileInfo);
                 }
                 catch (IOException innerEx)
                 {
@@ -158,8 +150,6 @@ namespace SJP.Sherlock.Tests
                     });
                 }
             }
-
-            tmpPath.Delete();
         }
     }
 }

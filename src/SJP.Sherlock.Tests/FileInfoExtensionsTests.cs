@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,8 +25,8 @@ namespace SJP.Sherlock.Tests
         [Test]
         public static void GetLockingProcesses_WhenGivenFileWithNoLocks_ReturnsEmptySet()
         {
-            var tmpPath = new FileInfo(Path.GetTempFileName());
-            var lockingProcs = tmpPath.GetLockingProcesses();
+            using var tmpPath = new TemporaryFile();
+            var lockingProcs = tmpPath.FileInfo.GetLockingProcesses();
 
             Assert.That(lockingProcs, Is.Empty);
         }
@@ -35,56 +34,42 @@ namespace SJP.Sherlock.Tests
         [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPath_ReturnsCorrectProcess()
         {
-            var tmpPath = new FileInfo(Path.GetTempFileName());
-            using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                var process = Process.GetCurrentProcess();
+            using var tmpPath = new TemporaryFile();
+            using var _ = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockingProcs = RestartManager.GetLockingProcesses(tmpPath.FileInfo);
+            var process = Process.GetCurrentProcess();
 
-                var lockingId = lockingProcs.Single().ProcessId;
-                var currentId = process.Id;
+            var lockingId = lockingProcs.Single().ProcessId;
+            var currentId = process.Id;
 
-                Assert.That(currentId, Is.EqualTo(lockingId));
-            }
-
-            tmpPath.Delete();
+            Assert.That(currentId, Is.EqualTo(lockingId));
         }
 
         [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPath_ReturnsCorrectNumberOfLocks()
         {
-            var tmpPath = new FileInfo(Path.GetTempFileName());
-            using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                Assert.That(lockingProcs, Has.One.Items);
-            }
-
-            tmpPath.Delete();
+            using var tmpPath = new TemporaryFile();
+            using var _ = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockingProcs = RestartManager.GetLockingProcesses(tmpPath.FileInfo);
+            Assert.That(lockingProcs, Has.One.Items);
         }
 
         [Test]
         public static void IsFileLocked_WhenLockingNotOnPath_ReturnsFalse()
         {
-            var tmpPath = new FileInfo(Path.GetTempFileName());
+            using var tmpPath = new TemporaryFile();
 
-            var isLocked = tmpPath.IsFileLocked();
+            var isLocked = tmpPath.FileInfo.IsFileLocked();
             Assert.That(isLocked, Is.False);
-
-            tmpPath.Delete();
         }
 
         [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPath_ReturnsTrue()
         {
-            var tmpPath = new FileInfo(Path.GetTempFileName());
-            using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var isLocked = tmpPath.IsFileLocked();
-                Assert.That(isLocked, Is.True);
-            }
-
-            tmpPath.Delete();
+            using var tmpPath = new TemporaryFile();
+            using var _ = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var isLocked = tmpPath.FileInfo.IsFileLocked();
+            Assert.That(isLocked, Is.True);
         }
     }
 }

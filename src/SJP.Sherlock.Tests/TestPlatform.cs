@@ -9,7 +9,7 @@ namespace SJP.Sherlock.Tests
     /// <summary>
     /// Contains attributes used to filter tests by platform.
     /// </summary>
-    public static class TestPlatform
+    internal static class TestPlatform
     {
         /// <summary>
         /// When applied to a test, ensures it is only run on a Windows environment.

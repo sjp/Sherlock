@@ -31,85 +31,57 @@ namespace SJP.Sherlock.Tests
         [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathAndGivenString_ReturnsNonEmptyLockingSet()
         {
-            var tmpPath = Path.GetTempFileName();
-            using (var file = File.Open(tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                Assert.That(lockingProcs, Is.Not.Empty);
-            }
-
-            File.Delete(tmpPath);
+            using var tmpPath = new TemporaryFile();
+            using var _ = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockingProcs = RestartManager.GetLockingProcesses(tmpPath.FilePath);
+            Assert.That(lockingProcs, Is.Not.Empty);
         }
 
         [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathAndGivenString_ReturnsCorrectProcess()
         {
-            var tmpPath = Path.GetTempFileName();
-            using (var file = File.Open(tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                var process = Process.GetCurrentProcess();
+            using var tmpPath = new TemporaryFile();
+            using var _ = tmpPath.FileInfo.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockingProcs = RestartManager.GetLockingProcesses(tmpPath.FilePath);
+            var process = Process.GetCurrentProcess();
 
-                var lockingId = lockingProcs.Single().ProcessId;
-                var currentId = process.Id;
+            var lockingId = lockingProcs.Single().ProcessId;
+            var currentId = process.Id;
 
-                Assert.That(currentId, Is.EqualTo(lockingId));
-            }
-
-            File.Delete(tmpPath);
+            Assert.That(currentId, Is.EqualTo(lockingId));
         }
 
         [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathAndGivenDirectory_ReturnsNonEmptyLockingSet()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
+            var tmpFile = new FileInfo(Path.Combine(tmpDir.DirectoryPath, Path.GetRandomFileName()));
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
-
-            using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var lockingProcs = RestartManager.GetLockingProcesses(tmpDir);
-                Assert.That(lockingProcs, Is.Not.Empty);
-            }
-
-            tmpDir.Delete(true);
+            using var _ = tmpFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockingProcs = RestartManager.GetLockingProcesses(tmpDir.DirectoryInfo);
+            Assert.That(lockingProcs, Is.Not.Empty);
         }
 
         [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathAndGivenDirectory_ReturnsCorrectProcess()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
+            var tmpFile = new FileInfo(Path.Combine(tmpDir.DirectoryPath, Path.GetRandomFileName()));
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
+            using var _ = tmpFile.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockingProcs = RestartManager.GetLockingProcesses(tmpDir.DirectoryInfo);
+            var process = Process.GetCurrentProcess();
 
-            using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var lockingProcs = RestartManager.GetLockingProcesses(tmpDir);
-                var process = Process.GetCurrentProcess();
+            var lockingId = lockingProcs.Single().ProcessId;
+            var currentId = process.Id;
 
-                var lockingId = lockingProcs.Single().ProcessId;
-                var currentId = process.Id;
-
-                Assert.That(currentId, Is.EqualTo(lockingId));
-            }
-
-            tmpDir.Delete(true);
+            Assert.That(currentId, Is.EqualTo(lockingId));
         }
 
         [Test]
         public static void GetLockingProcesses_WhenGivenEmptyStringCollection_ReturnsEmptyResult()
         {
-            var arg = new List<string>();
+            var arg = Array.Empty<string>();
             var result = RestartManager.GetLockingProcesses(arg);
 
             Assert.That(result, Is.Empty);
@@ -118,7 +90,7 @@ namespace SJP.Sherlock.Tests
         [Test]
         public static void GetLockingProcesses_WhenGivenEmptyFileInfoCollection_ReturnsEmptyResult()
         {
-            var arg = new List<FileInfo>();
+            var arg = Array.Empty<FileInfo>();
             var result = RestartManager.GetLockingProcesses(arg);
 
             Assert.That(result, Is.Empty);

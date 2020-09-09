@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -40,162 +39,92 @@ namespace SJP.Sherlock.Tests
         [Test, TestPlatform.Windows]
         public static void GetLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
+            var tmpDirFile = Path.Combine(tmpDir.DirectoryPath, Path.GetRandomFileName());
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
-
-            using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var lockedFiles = tmpDir.GetLockedFiles();
-                Assert.That(lockedFiles, Is.Not.Empty);
-            }
-
-            tmpDir.Delete(true);
+            using var _ = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockedFiles = tmpDir.DirectoryInfo.GetLockedFiles();
+            Assert.That(lockedFiles, Is.Not.Empty);
         }
 
         [Test]
         public static void GetLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsEmptyList()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
-
-            var lockedFiles = tmpDir.GetLockedFiles();
+            var lockedFiles = tmpDir.DirectoryInfo.GetLockedFiles();
             Assert.That(lockedFiles, Is.Empty);
-
-            tmpDir.Delete(true);
         }
 
         [Test, TestPlatform.Windows]
         public static void EnumerateLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
+            var tmpDirFile = Path.Combine(tmpDir.DirectoryPath, Path.GetRandomFileName());
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
+            using var _ = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockedFiles = tmpDir.DirectoryInfo.EnumerateLockedFiles();
 
-            using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+            Assert.Multiple(() =>
             {
-                var lockedFiles = tmpDir.EnumerateLockedFiles();
                 Assert.That(lockedFiles, Is.Not.Empty);
-            }
+                Assert.That(lockedFiles.Select(f => f.FullName), Contains.Item(tmpDirFile));
+            });
 
-            tmpDir.Delete(true);
         }
 
         [Test]
         public static void EnumerateLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsEmptyList()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
-
-            var lockedFiles = tmpDir.EnumerateLockedFiles();
+            var lockedFiles = tmpDir.DirectoryInfo.EnumerateLockedFiles();
             Assert.That(lockedFiles, Is.Empty);
-
-            tmpDir.Delete(true);
         }
 
         [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathInDirectory_ReturnsCorrectProcess()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
+            var tmpDirFile = Path.Combine(tmpDir.DirectoryPath, Path.GetRandomFileName());
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
+            using var _ = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var lockedProcesses = tmpDir.DirectoryInfo.GetLockingProcesses();
+            var process = Process.GetCurrentProcess();
 
-            using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var lockedProcesses = tmpDir.GetLockingProcesses();
-                var process = Process.GetCurrentProcess();
+            var lockingId = lockedProcesses.Single().ProcessId;
+            var currentId = process.Id;
 
-                var lockingId = lockedProcesses.Single().ProcessId;
-                var currentId = process.Id;
-
-                Assert.That(currentId, Is.EqualTo(lockingId));
-            }
-
-            tmpDir.Delete(true);
+            Assert.That(currentId, Is.EqualTo(lockingId));
         }
 
         [Test]
         public static void GetLockingProcesses_WhenNotLockingOnPathInDirectory_ReturnsEmptySet()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
-
-            var lockedProceses = tmpDir.GetLockingProcesses();
+            var lockedProceses = tmpDir.DirectoryInfo.GetLockingProcesses();
             Assert.That(lockedProceses, Is.Empty);
-
-            tmpDir.Delete(true);
         }
 
         [Test, TestPlatform.Windows]
         public static void ContainsLockedFiles_WhenLockingOnPathInDirectory_ReturnsTrue()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
+            var tmpDirFile = Path.Combine(tmpDir.DirectoryPath, Path.GetRandomFileName());
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
-
-            using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-            {
-                var containsLockedFiles = tmpDir.ContainsLockedFiles();
-                Assert.That(containsLockedFiles, Is.True);
-            }
-
-            tmpDir.Delete(true);
+            using var _ = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            var containsLockedFiles = tmpDir.DirectoryInfo.ContainsLockedFiles();
+            Assert.That(containsLockedFiles, Is.True);
         }
 
         [Test]
         public static void ContainsLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsFalse()
         {
-            var tmpFilePath = Path.GetTempFileName();
-            var tmpDirPath = Path.GetDirectoryName(tmpFilePath);
-            tmpDirPath = Path.Combine(tmpDirPath, Guid.NewGuid().ToString());
+            using var tmpDir = new TemporaryDirectory();
 
-            var tmpDir = new DirectoryInfo(tmpDirPath);
-            tmpDir.Create();
-            var tmpDirFile = Path.Combine(tmpDirPath, Path.GetFileName(tmpFilePath));
-            File.Move(tmpFilePath, tmpDirFile);
-
-            var containsLockedFiles = tmpDir.ContainsLockedFiles();
+            var containsLockedFiles = tmpDir.DirectoryInfo.ContainsLockedFiles();
             Assert.That(containsLockedFiles, Is.False);
-
-            tmpDir.Delete(true);
         }
     }
 }
