@@ -32,7 +32,7 @@ namespace SJP.Sherlock.Tests
             Assert.IsTrue(lockingProcs.Count == 0);
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPath_ReturnsCorrectProcess()
         {
             var tmpPath = new FileInfo(Path.GetTempFileName());
@@ -50,7 +50,7 @@ namespace SJP.Sherlock.Tests
             tmpPath.Delete();
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPath_ReturnsCorrectNumberOfLocks()
         {
             var tmpPath = new FileInfo(Path.GetTempFileName());
@@ -74,7 +74,7 @@ namespace SJP.Sherlock.Tests
             tmpPath.Delete();
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPath_ReturnsTrue()
         {
             var tmpPath = new FileInfo(Path.GetTempFileName());

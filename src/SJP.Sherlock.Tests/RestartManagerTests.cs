@@ -28,7 +28,7 @@ namespace SJP.Sherlock.Tests
             Assert.Throws<ArgumentNullException>(() => RestartManager.GetLockingProcesses((DirectoryInfo)null));
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathAndGivenString_ReturnsNonEmptyLockingSet()
         {
             var tmpPath = Path.GetTempFileName();
@@ -41,7 +41,7 @@ namespace SJP.Sherlock.Tests
             File.Delete(tmpPath);
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathAndGivenString_ReturnsCorrectProcess()
         {
             var tmpPath = Path.GetTempFileName();
@@ -59,7 +59,7 @@ namespace SJP.Sherlock.Tests
             File.Delete(tmpPath);
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathAndGivenDirectory_ReturnsNonEmptyLockingSet()
         {
             var tmpFilePath = Path.GetTempFileName();
@@ -80,7 +80,7 @@ namespace SJP.Sherlock.Tests
             tmpDir.Delete(true);
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathAndGivenDirectory_ReturnsCorrectProcess()
         {
             var tmpFilePath = Path.GetTempFileName();

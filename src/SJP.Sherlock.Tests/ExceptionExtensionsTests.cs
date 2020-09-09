@@ -21,7 +21,7 @@ namespace SJP.Sherlock.Tests
             Assert.IsFalse(ex.IsFileLocked());
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void IsFileLocked_GivenLockingIOException_ReturnsTrue()
         {
             var tmpPath = new FileInfo(Path.GetTempFileName());

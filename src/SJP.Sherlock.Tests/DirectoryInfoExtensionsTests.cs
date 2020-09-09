@@ -37,7 +37,7 @@ namespace SJP.Sherlock.Tests
             Assert.Throws<ArgumentNullException>(() => tmp.ContainsLockedFiles());
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
         {
             var tmpFilePath = Path.GetTempFileName();
@@ -76,7 +76,7 @@ namespace SJP.Sherlock.Tests
             tmpDir.Delete(true);
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void EnumerateLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
         {
             var tmpFilePath = Path.GetTempFileName();
@@ -115,7 +115,7 @@ namespace SJP.Sherlock.Tests
             tmpDir.Delete(true);
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void GetLockingProcesses_WhenLockingOnPathInDirectory_ReturnsCorrectProcess()
         {
             var tmpFilePath = Path.GetTempFileName();
@@ -159,7 +159,7 @@ namespace SJP.Sherlock.Tests
             tmpDir.Delete(true);
         }
 
-        [Test]
+        [Test, TestPlatform.Windows]
         public static void ContainsLockedFiles_WhenLockingOnPathInDirectory_ReturnsTrue()
         {
             var tmpFilePath = Path.GetTempFileName();
