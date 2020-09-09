@@ -12,7 +12,7 @@ namespace SJP.Sherlock.Tests
             var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
             // this will always be true on Windows for unit tests because .NET Core is not supported on XP/Vista/Server 2008
-            Assert.AreEqual(isWindows, Platform.SupportsRestartManager);
+            Assert.That(Platform.SupportsRestartManager, Is.EqualTo(isWindows));
         }
     }
 }

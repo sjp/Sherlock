@@ -13,28 +13,28 @@ namespace SJP.Sherlock.Tests
         public static void GetLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
         {
             DirectoryInfo tmp = null;
-            Assert.Throws<ArgumentNullException>(() => tmp.GetLockedFiles());
+            Assert.That(() => tmp.GetLockedFiles(), Throws.ArgumentNullException);
         }
 
         [Test]
         public static void EnumerateLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
         {
             DirectoryInfo tmp = null;
-            Assert.Throws<ArgumentNullException>(() => tmp.EnumerateLockedFiles());
+            Assert.That(() => tmp.EnumerateLockedFiles(), Throws.ArgumentNullException);
         }
 
         [Test]
         public static void GetLockingProcesses_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
         {
             DirectoryInfo tmp = null;
-            Assert.Throws<ArgumentNullException>(() => tmp.GetLockingProcesses());
+            Assert.That(() => tmp.GetLockingProcesses(), Throws.ArgumentNullException);
         }
 
         [Test]
         public static void ContainsLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
         {
             DirectoryInfo tmp = null;
-            Assert.Throws<ArgumentNullException>(() => tmp.ContainsLockedFiles());
+            Assert.That(() => tmp.ContainsLockedFiles(), Throws.ArgumentNullException);
         }
 
         [Test, TestPlatform.Windows]
@@ -52,7 +52,7 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockedFiles = tmpDir.GetLockedFiles();
-                Assert.IsTrue(lockedFiles.Count > 0);
+                Assert.That(lockedFiles, Is.Not.Empty);
             }
 
             tmpDir.Delete(true);
@@ -71,7 +71,7 @@ namespace SJP.Sherlock.Tests
             File.Move(tmpFilePath, tmpDirFile);
 
             var lockedFiles = tmpDir.GetLockedFiles();
-            Assert.IsFalse(lockedFiles.Count > 0);
+            Assert.That(lockedFiles, Is.Empty);
 
             tmpDir.Delete(true);
         }
@@ -91,7 +91,7 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockedFiles = tmpDir.EnumerateLockedFiles();
-                Assert.IsTrue(lockedFiles.Any());
+                Assert.That(lockedFiles, Is.Not.Empty);
             }
 
             tmpDir.Delete(true);
@@ -110,7 +110,7 @@ namespace SJP.Sherlock.Tests
             File.Move(tmpFilePath, tmpDirFile);
 
             var lockedFiles = tmpDir.EnumerateLockedFiles();
-            Assert.IsFalse(lockedFiles.Any());
+            Assert.That(lockedFiles, Is.Empty);
 
             tmpDir.Delete(true);
         }
@@ -135,7 +135,7 @@ namespace SJP.Sherlock.Tests
                 var lockingId = lockedProcesses.Single().ProcessId;
                 var currentId = process.Id;
 
-                Assert.AreEqual(currentId, lockingId);
+                Assert.That(currentId, Is.EqualTo(lockingId));
             }
 
             tmpDir.Delete(true);
@@ -154,7 +154,7 @@ namespace SJP.Sherlock.Tests
             File.Move(tmpFilePath, tmpDirFile);
 
             var lockedProceses = tmpDir.GetLockingProcesses();
-            Assert.IsTrue(!lockedProceses.Any());
+            Assert.That(lockedProceses, Is.Empty);
 
             tmpDir.Delete(true);
         }
@@ -174,7 +174,7 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var containsLockedFiles = tmpDir.ContainsLockedFiles();
-                Assert.IsTrue(containsLockedFiles);
+                Assert.That(containsLockedFiles, Is.True);
             }
 
             tmpDir.Delete(true);
@@ -193,7 +193,7 @@ namespace SJP.Sherlock.Tests
             File.Move(tmpFilePath, tmpDirFile);
 
             var containsLockedFiles = tmpDir.ContainsLockedFiles();
-            Assert.IsFalse(containsLockedFiles);
+            Assert.That(containsLockedFiles, Is.False);
 
             tmpDir.Delete(true);
         }

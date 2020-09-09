@@ -13,14 +13,14 @@ namespace SJP.Sherlock.Tests
         public static void GetLockingProcesses_WhenGivenNullFileInfo_ThrowsArgNullException()
         {
             FileInfo tmp = null;
-            Assert.Throws<ArgumentNullException>(() => tmp.GetLockingProcesses());
+            Assert.That(() => tmp.GetLockingProcesses(), Throws.ArgumentNullException);
         }
 
         [Test]
         public static void IsFileLocked_WhenGivenNullFileInfo_ThrowsArgNullException()
         {
             FileInfo tmp = null;
-            Assert.Throws<ArgumentNullException>(() => tmp.IsFileLocked());
+            Assert.That(() => tmp.IsFileLocked(), Throws.ArgumentNullException);
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace SJP.Sherlock.Tests
             var tmpPath = new FileInfo(Path.GetTempFileName());
             var lockingProcs = tmpPath.GetLockingProcesses();
 
-            Assert.IsTrue(lockingProcs.Count == 0);
+            Assert.That(lockingProcs, Is.Empty);
         }
 
         [Test, TestPlatform.Windows]
@@ -44,7 +44,7 @@ namespace SJP.Sherlock.Tests
                 var lockingId = lockingProcs.Single().ProcessId;
                 var currentId = process.Id;
 
-                Assert.AreEqual(currentId, lockingId);
+                Assert.That(currentId, Is.EqualTo(lockingId));
             }
 
             tmpPath.Delete();
@@ -57,7 +57,7 @@ namespace SJP.Sherlock.Tests
             using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                Assert.AreEqual(1, lockingProcs.Count);
+                Assert.That(lockingProcs, Has.One.Items);
             }
 
             tmpPath.Delete();
@@ -69,7 +69,7 @@ namespace SJP.Sherlock.Tests
             var tmpPath = new FileInfo(Path.GetTempFileName());
 
             var isLocked = tmpPath.IsFileLocked();
-            Assert.IsFalse(isLocked);
+            Assert.That(isLocked, Is.False);
 
             tmpPath.Delete();
         }
@@ -81,7 +81,7 @@ namespace SJP.Sherlock.Tests
             using (var file = tmpPath.Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var isLocked = tmpPath.IsFileLocked();
-                Assert.IsTrue(isLocked);
+                Assert.That(isLocked, Is.True);
             }
 
             tmpPath.Delete();

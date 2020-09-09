@@ -11,14 +11,14 @@ namespace SJP.Sherlock.Tests
         public static void IsFileLocked_GivenNullIOException_ThrowsArgNullException()
         {
             IOException ex = null;
-            Assert.Throws<ArgumentNullException>(() => ex.IsFileLocked());
+            Assert.That(() => ex.IsFileLocked(), Throws.ArgumentNullException);
         }
 
         [Test]
         public static void IsFileLocked_GivenRegularIOException_ReturnsFalse()
         {
             var ex = new IOException("test");
-            Assert.IsFalse(ex.IsFileLocked());
+            Assert.That(ex.IsFileLocked(), Is.False);
         }
 
         [Test, TestPlatform.Windows]
@@ -35,7 +35,7 @@ namespace SJP.Sherlock.Tests
             }
             catch (IOException ex)
             {
-                Assert.IsTrue(ex.IsFileLocked());
+                Assert.That(ex.IsFileLocked(), Is.True);
             }
 
             tmpPath.Delete();
@@ -46,7 +46,7 @@ namespace SJP.Sherlock.Tests
         {
             Exception ex = null;
             var tmpPath = new DirectoryInfo(Path.GetTempPath());
-            Assert.Throws<ArgumentNullException>(() => ex.RethrowWithLockingInformation(tmpPath));
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpPath), Throws.ArgumentNullException);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace SJP.Sherlock.Tests
         {
             var ex = new Exception();
             DirectoryInfo tmpPath = null;
-            Assert.Throws<ArgumentNullException>(() => ex.RethrowWithLockingInformation(tmpPath));
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpPath), Throws.ArgumentNullException);
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace SJP.Sherlock.Tests
             Exception ex = null;
             var tmpFile = new FileInfo(Path.GetTempFileName());
 
-            Assert.Throws<ArgumentNullException>(() => ex.RethrowWithLockingInformation(tmpFile));
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpFile), Throws.ArgumentNullException);
 
             tmpFile.Delete();
         }
@@ -73,7 +73,7 @@ namespace SJP.Sherlock.Tests
         {
             var ex = new Exception();
             FileInfo tmpFile = null;
-            Assert.Throws<ArgumentException>(() => ex.RethrowWithLockingInformation(tmpFile));
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpFile), Throws.ArgumentException);
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace SJP.Sherlock.Tests
             Exception ex = null;
             var tmpFile = Path.GetTempFileName();
 
-            Assert.Throws<ArgumentNullException>(() => ex.RethrowWithLockingInformation(tmpFile));
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpFile), Throws.ArgumentNullException);
 
             File.Delete(tmpFile);
         }
@@ -92,7 +92,7 @@ namespace SJP.Sherlock.Tests
         {
             var ex = new Exception();
             const string tmpFile = null;
-            Assert.Throws<ArgumentException>(() => ex.RethrowWithLockingInformation(tmpFile));
+            Assert.That(() => ex.RethrowWithLockingInformation(tmpFile), Throws.ArgumentException);
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace SJP.Sherlock.Tests
 
             var result = ex.RethrowWithLockingInformation(tmpPath);
 
-            Assert.IsFalse(result);
+            Assert.That(result, Is.False);
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace SJP.Sherlock.Tests
             {
                 var result = ex.RethrowWithLockingInformation(tmpPath);
 
-                Assert.IsFalse(result);
+                Assert.That(result, Is.False);
             }
 
             tmpPath.Delete();
@@ -151,10 +151,10 @@ namespace SJP.Sherlock.Tests
                 {
                     Assert.Multiple(() =>
                     {
-                        Assert.AreNotEqual(ex.Message, innerEx.Message);
-                        Assert.AreEqual(ex.HResult, innerEx.HResult);
-                        Assert.IsNotNull(innerEx.InnerException);
-                        Assert.AreSame(ex, innerEx.InnerException);
+                        Assert.That(ex.Message, Is.Not.EqualTo(innerEx.Message));
+                        Assert.That(ex.HResult, Is.EqualTo(innerEx.HResult));
+                        Assert.That(innerEx.InnerException, Is.Not.Null);
+                        Assert.That(ex, Is.SameAs(innerEx.InnerException));
                     });
                 }
             }

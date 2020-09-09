@@ -13,19 +13,19 @@ namespace SJP.Sherlock.Tests
         [Test]
         public static void GetLockingProcesses_WhenGivenNullStringArgs_ThrowsArgNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => RestartManager.GetLockingProcesses((IEnumerable<string>)null));
+            Assert.That(() => RestartManager.GetLockingProcesses((IEnumerable<string>)null), Throws.ArgumentNullException);
         }
 
         [Test]
         public static void GetLockingProcesses_WhenGivenNullFileInfoArgs_ThrowsArgNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => RestartManager.GetLockingProcesses((IEnumerable<FileInfo>)null));
+            Assert.That(() => RestartManager.GetLockingProcesses((IEnumerable<FileInfo>)null), Throws.ArgumentNullException);
         }
 
         [Test]
         public static void GetLockingProcesses_WhenGivenNullDirectoryInfoArgs_ThrowsArgNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => RestartManager.GetLockingProcesses((DirectoryInfo)null));
+            Assert.That(() => RestartManager.GetLockingProcesses((DirectoryInfo)null), Throws.ArgumentNullException);
         }
 
         [Test, TestPlatform.Windows]
@@ -35,7 +35,7 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockingProcs = RestartManager.GetLockingProcesses(tmpPath);
-                Assert.IsTrue(lockingProcs.Count > 0);
+                Assert.That(lockingProcs, Is.Not.Empty);
             }
 
             File.Delete(tmpPath);
@@ -53,7 +53,7 @@ namespace SJP.Sherlock.Tests
                 var lockingId = lockingProcs.Single().ProcessId;
                 var currentId = process.Id;
 
-                Assert.AreEqual(currentId, lockingId);
+                Assert.That(currentId, Is.EqualTo(lockingId));
             }
 
             File.Delete(tmpPath);
@@ -74,7 +74,7 @@ namespace SJP.Sherlock.Tests
             using (var file = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 var lockingProcs = RestartManager.GetLockingProcesses(tmpDir);
-                Assert.IsTrue(lockingProcs.Count > 0);
+                Assert.That(lockingProcs, Is.Not.Empty);
             }
 
             tmpDir.Delete(true);
@@ -100,7 +100,7 @@ namespace SJP.Sherlock.Tests
                 var lockingId = lockingProcs.Single().ProcessId;
                 var currentId = process.Id;
 
-                Assert.AreEqual(currentId, lockingId);
+                Assert.That(currentId, Is.EqualTo(lockingId));
             }
 
             tmpDir.Delete(true);
@@ -112,7 +112,7 @@ namespace SJP.Sherlock.Tests
             var arg = new List<string>();
             var result = RestartManager.GetLockingProcesses(arg);
 
-            Assert.AreEqual(0, result.Count);
+            Assert.That(result, Is.Empty);
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace SJP.Sherlock.Tests
             var arg = new List<FileInfo>();
             var result = RestartManager.GetLockingProcesses(arg);
 
-            Assert.AreEqual(0, result.Count);
+            Assert.That(result, Is.Empty);
         }
     }
 }
