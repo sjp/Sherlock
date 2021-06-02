@@ -7,7 +7,7 @@
 
 > Easily find out which processes are holding locks on files.
 
-[![License (MIT)](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) ![Build Status](https://github.com/sjp/Sherlock/workflows/CI/badge.svg?branch=master) [![NuGet](https://img.shields.io/nuget/v/SJP.Sherlock.svg)](https://www.nuget.org/packages/SJP.Sherlock/)
+[![License (MIT)](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) ![Build Status](https://github.com/sjp/Sherlock/workflows/CI/badge.svg?branch=master) [![NuGet](https://img.shields.io/nuget/v/SJP.Sherlock.svg)](https://www.nuget.org/packages/SJP.Sherlock/) [![Code coverage](https://img.shields.io/codecov/c/gh/sjp/Sherlock/master?logo=codecov)](https://codecov.io/gh/sjp/Sherlock)
 
 This project uses the Windows Restart Manager APIs to find processes locking one or multiple files. Consequently this information is not portable to any platform aside from those running Windows Vista or Windows Server 2008 or newer. It supports .NET Standard 2.1 or greater.
 
