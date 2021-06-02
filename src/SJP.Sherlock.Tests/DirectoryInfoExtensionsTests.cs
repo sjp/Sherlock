@@ -70,7 +70,6 @@ namespace SJP.Sherlock.Tests
                 Assert.That(lockedFiles, Is.Not.Empty);
                 Assert.That(lockedFiles.Select(f => f.FullName), Contains.Item(tmpDirFile));
             });
-
         }
 
         [Test]

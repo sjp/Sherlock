@@ -151,7 +151,7 @@ namespace SJP.Sherlock
             if (fileNames.Any(f => f == null))
                 throw new ArgumentException("A null filename was provided.", nameof(fileNames));
 
-            if (!(exception is IOException ioex) || !ioex.IsFileLocked())
+            if (exception is not IOException ioex || !ioex.IsFileLocked())
                 return false;
 
             var lockers = RestartManager.GetLockingProcesses(fileNames);
@@ -223,7 +223,7 @@ namespace SJP.Sherlock
 
         private static MethodInfo? SetHResultMethod => _setHResultMethod.Value;
 
-        private readonly static Lazy<MethodInfo?> _setHResultMethod = new Lazy<MethodInfo?>(() =>
+        private readonly static Lazy<MethodInfo?> _setHResultMethod = new(() =>
         {
             var errorCodeMethod = typeof(Exception).GetMethod("SetErrorCode", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod);
             return errorCodeMethod ?? typeof(Exception).GetProperty(nameof(Exception.HResult), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?.GetSetMethod(true);

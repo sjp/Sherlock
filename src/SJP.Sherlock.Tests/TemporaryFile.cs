@@ -27,7 +27,7 @@ namespace SJP.Sherlock.Tests
         /// Gets the file information for the temporary file.
         /// </summary>
         /// <value>The file information.</value>
-        public FileInfo FileInfo => new FileInfo(FilePath);
+        public FileInfo FileInfo => new(FilePath);
 
         private static string GetTempFilePath()
         {

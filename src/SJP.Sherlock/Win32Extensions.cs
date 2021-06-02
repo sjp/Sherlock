@@ -8,7 +8,7 @@ namespace SJP.Sherlock
         public static NativeMethods.WinErrorCode ToErrorCode(this int errorCode)
         {
             if (!Enums.TryToObject<NativeMethods.WinErrorCode>(errorCode, out var result))
-                throw new InvalidCastException($"Unable to convert result code of { errorCode.ToString() } to a known error code.");
+                throw new InvalidCastException($"Unable to convert result code of { errorCode } to a known error code.");
 
             return result;
         }

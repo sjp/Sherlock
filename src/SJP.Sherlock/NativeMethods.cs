@@ -181,7 +181,7 @@ namespace SJP.Sherlock
         /// <summary>
         /// Describes the current status of an application that is acted upon by the Restart Manager.
         /// </summary>
-        internal enum RM_APP_STATUS
+        internal enum RM_APP_STATUS : uint
         {
             /// <summary>
             /// The application is in a state that is not described by any other enumerated state.
@@ -296,7 +296,7 @@ namespace SJP.Sherlock
             /// <summary>
             /// Contains a bit mask that describes the current status of the application. See the <see cref="RM_APP_STATUS"/> enumeration.
             /// </summary>
-            public uint AppStatus;
+            public RM_APP_STATUS AppStatus;
 
             /// <summary>
             /// Contains the Terminal Services session ID of the process. If the terminal session of the process cannot be determined, the value of this member is set to RM_INVALID_SESSION (-1). This member is not used if the process is a service or a system critical process.

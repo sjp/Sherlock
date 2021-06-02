@@ -28,7 +28,7 @@ namespace SJP.Sherlock.Tests
         /// Gets the directory information for the temporary directory.
         /// </summary>
         /// <value>The directory information.</value>
-        public DirectoryInfo DirectoryInfo => new DirectoryInfo(DirectoryPath);
+        public DirectoryInfo DirectoryInfo => new(DirectoryPath);
 
         private static string GetTempDirectoryPath()
         {
