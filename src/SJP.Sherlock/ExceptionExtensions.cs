@@ -161,7 +161,7 @@ namespace SJP.Sherlock
             const int max = 10;
             var builder = new StringBuilder();
             builder.Append(exception.Message);
-            builder.Append(" ");
+            builder.Append(' ');
 
             var message = FormatLockingMessage(lockers, fileNames, max);
             builder.Append(message);
@@ -200,7 +200,7 @@ namespace SJP.Sherlock
             foreach (var locker in truncatedLockers)
             {
                 builder
-                    .Append("[")
+                    .Append('[')
                     .Append(locker.ApplicationName)
                     .Append(", pid=")
                     .Append(locker.ProcessId)
@@ -213,7 +213,7 @@ namespace SJP.Sherlock
             if (count > max)
             {
                 builder
-                    .Append("[")
+                    .Append('[')
                     .Append(count - max)
                     .AppendLine(" more processes...]");
             }
