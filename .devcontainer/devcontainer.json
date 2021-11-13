@@ -1,0 +1,14 @@
+{
+	"name": "SJP.Sherlock Development",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+			"VARIANT": "6.0"
+		}
+	},
+	"settings": { },
+	"extensions": [
+		"ms-dotnettools.csharp"
+	],
+	"remoteUser": "vscode"
+}
