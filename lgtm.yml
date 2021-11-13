@@ -1,6 +1,0 @@
-extraction:
-  csharp:
-    index:
-      solution: src/SJP.Sherlock.sln
-      dotnet:
-        version: 3.1.201
