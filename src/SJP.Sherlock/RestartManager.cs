@@ -169,7 +169,7 @@ public static class RestartManager
             // Keep calling until ERROR_MORE_DATA is no longer returned or max # of retries is reached, whichever is first.
             uint pnProcInfo = 0;
             RM_PROCESS_INFO[]? rgAffectedApps = null;
-            int retry = 0;
+            var retry = 0;
             do
             {
                 var lpdwRebootReasons = (uint)RM_REBOOT_REASON.RmRebootReasonNone;
