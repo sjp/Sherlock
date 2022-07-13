@@ -29,13 +29,6 @@ internal static class DirectoryInfoExtensionsTests
         Assert.That(() => tmp.GetLockingProcesses(), Throws.ArgumentNullException);
     }
 
-    [Test]
-    public static void ContainsLockedFiles_WhenGivenNullDirectoryInfo_ThrowsArgNullException()
-    {
-        DirectoryInfo tmp = null;
-        Assert.That(() => tmp.ContainsLockedFiles(), Throws.ArgumentNullException);
-    }
-
     [Test, TestPlatform.Windows]
     public static void GetLockedFiles_WhenLockingOnPathInDirectory_ReturnsListOfLockedFiles()
     {
@@ -104,25 +97,5 @@ internal static class DirectoryInfoExtensionsTests
 
         var lockedProceses = tmpDir.DirectoryInfo.GetLockingProcesses();
         Assert.That(lockedProceses, Is.Empty);
-    }
-
-    [Test, TestPlatform.Windows]
-    public static void ContainsLockedFiles_WhenLockingOnPathInDirectory_ReturnsTrue()
-    {
-        using var tmpDir = new TemporaryDirectory();
-        var tmpDirFile = Path.Combine(tmpDir.DirectoryPath, Path.GetRandomFileName());
-
-        using var _ = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
-        var containsLockedFiles = tmpDir.DirectoryInfo.ContainsLockedFiles();
-        Assert.That(containsLockedFiles, Is.True);
-    }
-
-    [Test]
-    public static void ContainsLockedFiles_WhenNotLockingOnPathInDirectory_ReturnsFalse()
-    {
-        using var tmpDir = new TemporaryDirectory();
-
-        var containsLockedFiles = tmpDir.DirectoryInfo.ContainsLockedFiles();
-        Assert.That(containsLockedFiles, Is.False);
     }
 }
