@@ -119,7 +119,7 @@ public static class ExceptionExtensions
         if (files == null)
             throw new ArgumentNullException(nameof(files));
         if (files.Any(f => f == null))
-            throw new ArgumentException($"A null { nameof(FileInfo) } was provided.", nameof(files));
+            throw new ArgumentException($"A null {nameof(FileInfo)} was provided.", nameof(files));
 
         var fileNames = files.Select(f => f.FullName).ToList();
         return exception.RethrowWithLockingInformation(fileNames);

@@ -112,7 +112,7 @@ public static class RestartManager
         if (files == null)
             throw new ArgumentNullException(nameof(files));
         if (files.Any(f => f == null))
-            throw new ArgumentException($"A null { nameof(FileInfo) } was provided.", nameof(files));
+            throw new ArgumentException($"A null {nameof(FileInfo)} was provided.", nameof(files));
 
         if (!Platform.SupportsRestartManager)
             return Array.Empty<IProcessInfo>();
@@ -191,7 +191,7 @@ public static class RestartManager
                 }
 
                 if (errorCode != WinErrorCode.ERROR_MORE_DATA)
-                    throw GetException(errorCode, nameof(NativeMethods.RmGetList), $"Failed to get entries (retry { retry }).");
+                    throw GetException(errorCode, nameof(NativeMethods.RmGetList), $"Failed to get entries (retry {retry}).");
 
                 pnProcInfo = pnProcInfoNeeded;
                 rgAffectedApps = new RM_PROCESS_INFO[pnProcInfo];
@@ -244,7 +244,7 @@ public static class RestartManager
             ? _win32ErrorMessages[errorCode]
             : string.Format("0x{0:x8}", errorCodeNumber);
 
-        return new Win32Exception(errorCodeNumber, $"{ message } ({ apiName }() error { errorCodeNumber }: { reason })");
+        return new Win32Exception(errorCodeNumber, $"{message} ({apiName}() error {errorCodeNumber}: {reason})");
     }
 
     private static readonly IDictionary<WinErrorCode, string> _win32ErrorMessages = new Dictionary<WinErrorCode, string>

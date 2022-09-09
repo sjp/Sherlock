@@ -11,9 +11,9 @@ internal sealed class ProcessInfo : IProcessInfo, IEquatable<ProcessInfo>
             throw new ArgumentNullException(nameof(applicationName));
 
         if (!appType.IsValid())
-            throw new ArgumentException($"The { nameof(ApplicationType) } provided must be a valid enum.", nameof(appType));
+            throw new ArgumentException($"The {nameof(ApplicationType)} provided must be a valid enum.", nameof(appType));
         if (!appStatus.IsValid())
-            throw new ArgumentException($"The { nameof(ApplicationStatus) } provided must be a valid enum.", nameof(appStatus));
+            throw new ArgumentException($"The {nameof(ApplicationStatus)} provided must be a valid enum.", nameof(appStatus));
 
         ProcessId = processId;
         StartTime = startTime;
