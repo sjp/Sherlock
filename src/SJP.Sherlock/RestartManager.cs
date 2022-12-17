@@ -240,8 +240,8 @@ public static class RestartManager
     private static Exception GetException(WinErrorCode errorCode, string apiName, string message)
     {
         var errorCodeNumber = (int)errorCode;
-        var reason = _win32ErrorMessages.ContainsKey(errorCode)
-            ? _win32ErrorMessages[errorCode]
+        var reason = _win32ErrorMessages.TryGetValue(errorCode, out var errorMessage)
+            ? errorMessage
             : string.Format("0x{0:x8}", errorCodeNumber);
 
         return new Win32Exception(errorCodeNumber, $"{message} ({apiName}() error {errorCodeNumber}: {reason})");
