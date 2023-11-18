@@ -247,7 +247,7 @@ public static class RestartManager
         return new Win32Exception(errorCodeNumber, $"{message} ({apiName}() error {errorCodeNumber}: {reason})");
     }
 
-    private static readonly IDictionary<WinErrorCode, string> _win32ErrorMessages = new Dictionary<WinErrorCode, string>
+    private static readonly IReadOnlyDictionary<WinErrorCode, string> _win32ErrorMessages = new Dictionary<WinErrorCode, string>
     {
         [WinErrorCode.ERROR_ACCESS_DENIED] = "Access is denied.",
         [WinErrorCode.ERROR_SEM_TIMEOUT] = "A Restart Manager function could not obtain a Registry write mutex in the allotted time. A system restart is recommended because further use of the Restart Manager is likely to fail.",
