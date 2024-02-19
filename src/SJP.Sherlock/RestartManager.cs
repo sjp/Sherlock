@@ -250,9 +250,13 @@ public static class RestartManager
         var processId = procInfo.Process.dwProcessId;
 
         // ProcessStartTime is returned as local time, not UTC.
-        var highDateTime = unchecked((long)procInfo.Process.ProcessStartTime.dwHighDateTime << 32);
-        var lowDateTime = (uint)procInfo.Process.ProcessStartTime.dwLowDateTime;
-        var fileTime = highDateTime | lowDateTime;
+        long fileTime;
+        unchecked
+        {
+            var highDateTime = ((long)procInfo.Process.ProcessStartTime.dwHighDateTime << 32);
+            var lowDateTime = (uint)procInfo.Process.ProcessStartTime.dwLowDateTime;
+            fileTime = highDateTime | lowDateTime;
+        }
 
         var startTime = DateTime.FromFileTime(fileTime);
         var applicationName = procInfo.strAppName.ToString();
