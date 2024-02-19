@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using EnumsNET;
-using static SJP.Sherlock.NativeMethods;
+using Windows.Win32.Foundation;
 
 namespace SJP.Sherlock;
 
@@ -31,11 +31,11 @@ public static class ExceptionExtensions
         // (maybe even externally visible) method.
         var numericErrorCode = Marshal.GetHRForException(exception) & ((1 << 16) - 1);
 
-        if (!Enums.TryToObject<WinErrorCode>(numericErrorCode, out var errorCode))
+        if (!Enums.TryToObject<WIN32_ERROR>(numericErrorCode, out var errorCode))
             return false; // don't know the error code so we know it's at least not locked
 
-        return errorCode == WinErrorCode.ERROR_LOCK_VIOLATION
-            || errorCode == WinErrorCode.ERROR_SHARING_VIOLATION;
+        return errorCode == WIN32_ERROR.ERROR_LOCK_VIOLATION
+            || errorCode == WIN32_ERROR.ERROR_SHARING_VIOLATION;
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public static class ExceptionExtensions
         // Nasty but necessary.
         var ex = new IOException(builder.ToString(), exception);
         var hresult = Marshal.GetHRForException(exception);
-        SetHResultMethod?.Invoke(ex, new object[] { hresult });
+        SetHResultMethod?.Invoke(ex, [hresult]);
 
         throw ex;
     }

@@ -3,7 +3,7 @@ using EnumsNET;
 
 namespace SJP.Sherlock;
 
-internal sealed class ProcessInfo : IProcessInfo, IEquatable<ProcessInfo>
+internal sealed record ProcessInfo : IProcessInfo
 {
     public ProcessInfo(uint processId, DateTime startTime, string applicationName, string serviceShortName, ApplicationType appType, ApplicationStatus appStatus, uint sessionId, bool restartable)
     {
@@ -40,60 +40,6 @@ internal sealed class ProcessInfo : IProcessInfo, IEquatable<ProcessInfo>
     public uint TerminalServicesSessionId { get; }
 
     public bool Restartable { get; }
-
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            var hash = 17;
-            hash = (hash * 23) + ProcessId.GetHashCode();
-            return (hash * 23) + StartTime.GetHashCode();
-        }
-    }
-
-    public static bool operator ==(ProcessInfo? a, ProcessInfo? b)
-    {
-        if (a is null && b is null)
-            return true;
-
-        if (a is null || b is null)
-            return false;
-
-        return a.Equals(b);
-    }
-
-    public static bool operator !=(ProcessInfo? a, ProcessInfo? b)
-    {
-        if (a is null && b is null)
-            return false;
-
-        if (a is null || b is null)
-            return true;
-
-        return !a.Equals(b);
-    }
-
-    public bool Equals(ProcessInfo other)
-    {
-        if (other == null)
-            return false;
-
-        if (ReferenceEquals(this, other))
-            return true;
-
-        return other.ProcessId == ProcessId && other.StartTime == StartTime;
-    }
-
-    public override bool Equals(object obj)
-    {
-        if (obj == null)
-            return false;
-
-        if (ReferenceEquals(this, obj))
-            return true;
-
-        return obj is ProcessInfo procInfo && Equals(procInfo);
-    }
 
     public override string ToString() => ProcessId.ToString() + "@" + StartTime.ToString("o");
 }

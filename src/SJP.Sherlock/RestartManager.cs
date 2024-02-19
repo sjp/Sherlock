@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using static SJP.Sherlock.NativeMethods;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.RestartManager;
 
 namespace SJP.Sherlock;
 
@@ -24,7 +26,7 @@ public static class RestartManager
             throw new ArgumentNullException(nameof(directory));
 
         if (!Platform.SupportsRestartManager)
-            return Array.Empty<IProcessInfo>();
+            return [];
 
         var files = directory.GetFiles();
         var result = new HashSet<IProcessInfo>();
@@ -51,7 +53,7 @@ public static class RestartManager
             throw new ArgumentNullException(nameof(directory));
 
         if (!Platform.SupportsRestartManager)
-            return Array.Empty<IProcessInfo>();
+            return [];
 
         var files = directory.GetFiles(searchPattern);
         var result = new HashSet<IProcessInfo>();
@@ -79,7 +81,7 @@ public static class RestartManager
             throw new ArgumentNullException(nameof(directory));
 
         if (!Platform.SupportsRestartManager)
-            return Array.Empty<IProcessInfo>();
+            return [];
 
         var files = directory.GetFiles(searchPattern, searchOption);
         var result = new HashSet<IProcessInfo>();
@@ -115,7 +117,7 @@ public static class RestartManager
             throw new ArgumentException($"A null {nameof(FileInfo)} was provided.", nameof(files));
 
         if (!Platform.SupportsRestartManager)
-            return Array.Empty<IProcessInfo>();
+            return [];
 
         var filePaths = files.Select(f => f.FullName).ToList();
         return GetLockingProcesses(filePaths);
@@ -143,68 +145,104 @@ public static class RestartManager
             throw new ArgumentException("A null file path was provided.", nameof(paths));
 
         if (!Platform.SupportsRestartManager)
-            return Array.Empty<IProcessInfo>();
+            return [];
 
         var pathsArray = paths.ToArray();
         if (pathsArray.Length == 0)
-            return Array.Empty<IProcessInfo>();
+            return [];
 
         const int maxRetries = 10;
 
-        // See http://blogs.msdn.com/b/oldnewthing/archive/2012/02/17/10268840.aspx.
-        var key = new string('\0', CCH_RM_SESSION_KEY + 1);
+        // See https://devblogs.microsoft.com/oldnewthing/20120217-00/?p=8283
+        var sessionKey = "sherlock-" + Guid.NewGuid().ToString();
 
-        var errorCode = RmStartSession(out var handle, 0, key).ToErrorCode();
-        if (errorCode != WinErrorCode.ERROR_SUCCESS)
-            throw GetException(errorCode, nameof(NativeMethods.RmStartSession), "Failed to begin restart manager session.");
+        uint sessionHandle;
+        unsafe
+        {
+            fixed (char* strSessionKey = sessionKey)
+            {
+                var errorCode = PInvoke.RmStartSession(out sessionHandle, strSessionKey);
+                if (errorCode != WIN32_ERROR.ERROR_SUCCESS)
+                    throw GetException(errorCode, nameof(PInvoke.RmStartSession), "Failed to begin restart manager session.");
+            }
+        }
 
         try
         {
-            var resources = pathsArray;
-            errorCode = RmRegisterResources(handle, (uint)resources.Length, resources, 0, null, 0, null).ToErrorCode();
-            if (errorCode != WinErrorCode.ERROR_SUCCESS)
-                throw GetException(errorCode, nameof(NativeMethods.RmRegisterResources), "Could not register resources.");
+            unsafe
+            {
+                for (var i = 0; i < pathsArray.Length; i++)
+                {
+                    fixed (char* pathsPtr = pathsArray[0])
+                    {
+                        var pCWSTR = new PCWSTR(pathsPtr);
+                        var rgsFileNames = &pCWSTR;
+
+                        var registerErrorCode = PInvoke.RmRegisterResources(sessionHandle, (uint)pathsArray.Length, rgsFileNames, 0, null, 0, null);
+                        if (registerErrorCode != WIN32_ERROR.ERROR_SUCCESS)
+                            throw GetException(registerErrorCode, nameof(PInvoke.RmRegisterResources), "Could not register resources.");
+                    }
+                }
+            }
 
             // Repeated calls to RmGetList will often be required.
             // Keep calling until ERROR_MORE_DATA is no longer returned or max # of retries is reached, whichever is first.
-            uint pnProcInfo = 0;
-            RM_PROCESS_INFO[]? rgAffectedApps = null;
-            var retry = 0;
-            do
+            unsafe
             {
-                var lpdwRebootReasons = (uint)RM_REBOOT_REASON.RmRebootReasonNone;
-                errorCode = RmGetList(handle, out var pnProcInfoNeeded, ref pnProcInfo, rgAffectedApps, ref lpdwRebootReasons).ToErrorCode();
-                if (errorCode == WinErrorCode.ERROR_SUCCESS)
+                uint pnProcInfo = 0;
+                var retry = 0;
+                var affectedAppCount = 0;
+                WIN32_ERROR errorCode;
+                do
                 {
-                    if (pnProcInfo == 0 || rgAffectedApps == null)
-                        return Array.Empty<IProcessInfo>();
-
-                    var lockInfos = new List<IProcessInfo>((int)pnProcInfo);
-                    for (var i = 0; i < pnProcInfo; i++)
+                    uint pnProcInfoNeeded;
+                    if (affectedAppCount > 0)
                     {
-                        var rgAffectedApp = rgAffectedApps[i];
-                        var procInfo = CreateFromRmProcessInfo(rgAffectedApp);
-                        lockInfos.Add(procInfo);
+                        fixed (RM_PROCESS_INFO* rgAffectedApps = new RM_PROCESS_INFO[affectedAppCount])
+                        {
+                            errorCode = PInvoke.RmGetList(sessionHandle, out pnProcInfoNeeded, ref pnProcInfo, rgAffectedApps, out _);
+                            if (errorCode == WIN32_ERROR.ERROR_SUCCESS)
+                            {
+                                if (pnProcInfo == 0 || rgAffectedApps == null)
+                                    return [];
+
+                                var lockInfos = new List<IProcessInfo>((int)pnProcInfo);
+                                for (var i = 0; i < pnProcInfo; i++)
+                                {
+                                    var rgAffectedApp = rgAffectedApps[i];
+                                    var procInfo = CreateFromRmProcessInfo(rgAffectedApp);
+                                    lockInfos.Add(procInfo);
+                                }
+
+                                return new HashSet<IProcessInfo>(lockInfos);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        errorCode = PInvoke.RmGetList(sessionHandle, out pnProcInfoNeeded, ref pnProcInfo, null, out _);
+                        if (errorCode == WIN32_ERROR.ERROR_SUCCESS && pnProcInfo == 0)
+                        {
+                            return [];
+                        }
                     }
 
-                    return new HashSet<IProcessInfo>(lockInfos);
-                }
+                    if (errorCode != WIN32_ERROR.ERROR_MORE_DATA)
+                        throw GetException(errorCode, nameof(PInvoke.RmGetList), $"Failed to get entries (retry {retry}).");
 
-                if (errorCode != WinErrorCode.ERROR_MORE_DATA)
-                    throw GetException(errorCode, nameof(NativeMethods.RmGetList), $"Failed to get entries (retry {retry}).");
-
-                pnProcInfo = pnProcInfoNeeded;
-                rgAffectedApps = new RM_PROCESS_INFO[pnProcInfo];
-            } while ((errorCode == WinErrorCode.ERROR_MORE_DATA) && (retry++ < maxRetries));
+                    pnProcInfo = pnProcInfoNeeded;
+                    affectedAppCount = (int)pnProcInfo;
+                } while ((errorCode == WIN32_ERROR.ERROR_MORE_DATA) && (retry++ < maxRetries));
+            }
         }
         finally
         {
-            errorCode = RmEndSession(handle).ToErrorCode();
-            if (errorCode != WinErrorCode.ERROR_SUCCESS)
-                throw GetException(errorCode, nameof(NativeMethods.RmEndSession), "Failed to end the restart manager session.");
+            var errorCode = PInvoke.RmEndSession(sessionHandle);
+            if (errorCode != WIN32_ERROR.ERROR_SUCCESS)
+                throw GetException(errorCode, nameof(PInvoke.RmEndSession), "Failed to end the restart manager session.");
         }
 
-        return Array.Empty<IProcessInfo>();
+        return [];
     }
 
     private static IProcessInfo CreateFromRmProcessInfo(RM_PROCESS_INFO procInfo)
@@ -212,14 +250,13 @@ public static class RestartManager
         var processId = procInfo.Process.dwProcessId;
 
         // ProcessStartTime is returned as local time, not UTC.
-        var highDateTime = (long)procInfo.Process.ProcessStartTime.dwHighDateTime;
-        highDateTime <<= 32;
-        var lowDateTime = procInfo.Process.ProcessStartTime.dwLowDateTime;
+        var highDateTime = ((long)procInfo.Process.ProcessStartTime.dwHighDateTime << 32);
+        var lowDateTime = (uint)procInfo.Process.ProcessStartTime.dwLowDateTime;
         var fileTime = highDateTime | lowDateTime;
 
         var startTime = DateTime.FromFileTime(fileTime);
-        var applicationName = procInfo.strAppName;
-        var serviceShortName = procInfo.strServiceShortName;
+        var applicationName = procInfo.strAppName.ToString();
+        var serviceShortName = procInfo.strServiceShortName.ToString();
         var applicationType = (ApplicationType)procInfo.ApplicationType;
         var applicationStatus = (ApplicationStatus)procInfo.AppStatus;
         var terminalServicesSessionId = procInfo.TSSessionId;
@@ -237,7 +274,7 @@ public static class RestartManager
         );
     }
 
-    private static Exception GetException(WinErrorCode errorCode, string apiName, string message)
+    private static Exception GetException(WIN32_ERROR errorCode, string apiName, string message)
     {
         var errorCodeNumber = (int)errorCode;
         var reason = _win32ErrorMessages.TryGetValue(errorCode, out var errorMessage)
@@ -247,17 +284,17 @@ public static class RestartManager
         return new Win32Exception(errorCodeNumber, $"{message} ({apiName}() error {errorCodeNumber}: {reason})");
     }
 
-    private static readonly IReadOnlyDictionary<WinErrorCode, string> _win32ErrorMessages = new Dictionary<WinErrorCode, string>
+    private static readonly IReadOnlyDictionary<WIN32_ERROR, string> _win32ErrorMessages = new Dictionary<WIN32_ERROR, string>
     {
-        [WinErrorCode.ERROR_ACCESS_DENIED] = "Access is denied.",
-        [WinErrorCode.ERROR_SEM_TIMEOUT] = "A Restart Manager function could not obtain a Registry write mutex in the allotted time. A system restart is recommended because further use of the Restart Manager is likely to fail.",
-        [WinErrorCode.ERROR_BAD_ARGUMENTS] = "One or more arguments are not correct. This error value is returned by the Restart Manager function if a NULL pointer or 0 is passed in a parameter that requires a non-null and non-zero value.",
-        [WinErrorCode.ERROR_MAX_SESSIONS_REACHED] = "The maximum number of sessions has been reached.",
-        [WinErrorCode.ERROR_WRITE_FAULT] = "An operation was unable to read or write to the registry.",
-        [WinErrorCode.ERROR_OUTOFMEMORY] = "A Restart Manager operation could not complete because not enough memory was available.",
-        [WinErrorCode.ERROR_CANCELLED] = "The current operation is canceled by user.",
-        [WinErrorCode.ERROR_MORE_DATA] = "More data is available.",
-        [WinErrorCode.ERROR_INVALID_HANDLE] = "No Restart Manager session exists for the handle supplied."
+        [WIN32_ERROR.ERROR_ACCESS_DENIED] = "Access is denied.",
+        [WIN32_ERROR.ERROR_SEM_TIMEOUT] = "A Restart Manager function could not obtain a Registry write mutex in the allotted time. A system restart is recommended because further use of the Restart Manager is likely to fail.",
+        [WIN32_ERROR.ERROR_BAD_ARGUMENTS] = "One or more arguments are not correct. This error value is returned by the Restart Manager function if a NULL pointer or 0 is passed in a parameter that requires a non-null and non-zero value.",
+        [WIN32_ERROR.ERROR_MAX_SESSIONS_REACHED] = "The maximum number of sessions has been reached.",
+        [WIN32_ERROR.ERROR_WRITE_FAULT] = "An operation was unable to read or write to the registry.",
+        [WIN32_ERROR.ERROR_OUTOFMEMORY] = "A Restart Manager operation could not complete because not enough memory was available.",
+        [WIN32_ERROR.ERROR_CANCELLED] = "The current operation is canceled by user.",
+        [WIN32_ERROR.ERROR_MORE_DATA] = "More data is available.",
+        [WIN32_ERROR.ERROR_INVALID_HANDLE] = "No Restart Manager session exists for the handle supplied."
         // ignoring ERROR_SUCCESS because this is the OK case
     };
 }
