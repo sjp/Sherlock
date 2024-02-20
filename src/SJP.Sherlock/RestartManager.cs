@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.RestartManager;
@@ -167,21 +168,23 @@ public static class RestartManager
             }
         }
 
+        var lockInfos = new List<IProcessInfo>();
+
         try
         {
             unsafe
             {
-                for (var i = 0; i < pathsArray.Length; i++)
+                fixed (PCWSTR* rgsFileNames = new PCWSTR[pathsArray.Length])
                 {
-                    fixed (char* pathsPtr = pathsArray[0])
+                    for (var i = 0; i < pathsArray.Length; i++)
                     {
-                        var pCWSTR = new PCWSTR(pathsPtr);
-                        var rgsFileNames = &pCWSTR;
-
-                        var registerErrorCode = PInvoke.RmRegisterResources(sessionHandle, (uint)pathsArray.Length, rgsFileNames, 0, null, 0, null);
-                        if (registerErrorCode != WIN32_ERROR.ERROR_SUCCESS)
-                            throw GetException(registerErrorCode, nameof(PInvoke.RmRegisterResources), "Could not register resources.");
+                        var intPtr = Marshal.StringToHGlobalUni(pathsArray[i]);
+                        rgsFileNames[i] = new PCWSTR((char*)intPtr.ToPointer());
                     }
+
+                    var registerErrorCode = PInvoke.RmRegisterResources(sessionHandle, (uint)pathsArray.Length, rgsFileNames, 0, null, 0, null);
+                    if (registerErrorCode != WIN32_ERROR.ERROR_SUCCESS)
+                        throw GetException(registerErrorCode, nameof(PInvoke.RmRegisterResources), "Could not register resources.");
                 }
             }
 
@@ -195,43 +198,27 @@ public static class RestartManager
                 WIN32_ERROR errorCode;
                 do
                 {
-                    uint pnProcInfoNeeded;
-                    if (affectedAppCount > 0)
+                    fixed (RM_PROCESS_INFO* rgAffectedApps = new RM_PROCESS_INFO[affectedAppCount])
                     {
-                        fixed (RM_PROCESS_INFO* rgAffectedApps = new RM_PROCESS_INFO[affectedAppCount])
+                        errorCode = PInvoke.RmGetList(sessionHandle, out var pnProcInfoNeeded, ref pnProcInfo, rgAffectedApps, out _);
+                        if (errorCode == WIN32_ERROR.ERROR_SUCCESS)
                         {
-                            errorCode = PInvoke.RmGetList(sessionHandle, out pnProcInfoNeeded, ref pnProcInfo, rgAffectedApps, out _);
-                            if (errorCode == WIN32_ERROR.ERROR_SUCCESS)
+                            for (var i = 0; i < pnProcInfo; i++)
                             {
-                                if (pnProcInfo == 0 || rgAffectedApps == null)
-                                    return [];
-
-                                var lockInfos = new List<IProcessInfo>((int)pnProcInfo);
-                                for (var i = 0; i < pnProcInfo; i++)
-                                {
-                                    var rgAffectedApp = rgAffectedApps[i];
-                                    var procInfo = CreateFromRmProcessInfo(rgAffectedApp);
-                                    lockInfos.Add(procInfo);
-                                }
-
-                                return new HashSet<IProcessInfo>(lockInfos);
+                                var rgAffectedApp = rgAffectedApps[i];
+                                var procInfo = CreateFromRmProcessInfo(rgAffectedApp);
+                                lockInfos.Add(procInfo);
                             }
-                        }
-                    }
-                    else
-                    {
-                        errorCode = PInvoke.RmGetList(sessionHandle, out pnProcInfoNeeded, ref pnProcInfo, null, out _);
-                        if (errorCode == WIN32_ERROR.ERROR_SUCCESS && pnProcInfo == 0)
-                        {
-                            return [];
-                        }
-                    }
 
-                    if (errorCode != WIN32_ERROR.ERROR_MORE_DATA)
-                        throw GetException(errorCode, nameof(PInvoke.RmGetList), $"Failed to get entries (retry {retry}).");
+                            break;
+                        }
 
-                    pnProcInfo = pnProcInfoNeeded;
-                    affectedAppCount = (int)pnProcInfo;
+                        if (errorCode != WIN32_ERROR.ERROR_MORE_DATA)
+                            throw GetException(errorCode, nameof(PInvoke.RmGetList), $"Failed to get entries (retry {retry}).");
+
+                        pnProcInfo = pnProcInfoNeeded;
+                        affectedAppCount = (int)pnProcInfo;
+                    }
                 } while ((errorCode == WIN32_ERROR.ERROR_MORE_DATA) && (retry++ < maxRetries));
             }
         }
@@ -242,7 +229,7 @@ public static class RestartManager
                 throw GetException(errorCode, nameof(PInvoke.RmEndSession), "Failed to end the restart manager session.");
         }
 
-        return [];
+        return lockInfos.ToHashSet();
     }
 
     private static IProcessInfo CreateFromRmProcessInfo(RM_PROCESS_INFO procInfo)

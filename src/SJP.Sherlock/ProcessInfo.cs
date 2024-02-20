@@ -5,7 +5,15 @@ namespace SJP.Sherlock;
 
 internal sealed record ProcessInfo : IProcessInfo
 {
-    public ProcessInfo(uint processId, DateTime startTime, string applicationName, string serviceShortName, ApplicationType appType, ApplicationStatus appStatus, uint sessionId, bool restartable)
+    public ProcessInfo(
+        uint processId,
+        DateTime startTime,
+        string applicationName,
+        string serviceShortName,
+        ApplicationType appType,
+        ApplicationStatus appStatus,
+        uint sessionId,
+        bool restartable)
     {
         if (string.IsNullOrWhiteSpace(applicationName))
             throw new ArgumentNullException(nameof(applicationName));
