@@ -194,30 +194,28 @@ public static class RestartManager
             {
                 uint pnProcInfo = 0;
                 var retry = 0;
-                var affectedAppCount = 0;
+                var affectedApps = 0;
                 WIN32_ERROR errorCode;
                 do
                 {
-                    fixed (RM_PROCESS_INFO* rgAffectedApps = new RM_PROCESS_INFO[affectedAppCount])
+                    fixed (RM_PROCESS_INFO* rgAffectedApps = new RM_PROCESS_INFO[affectedApps])
                     {
                         errorCode = PInvoke.RmGetList(sessionHandle, out var pnProcInfoNeeded, ref pnProcInfo, rgAffectedApps, out _);
-                        if (errorCode == WIN32_ERROR.ERROR_SUCCESS)
-                        {
-                            for (var i = 0; i < pnProcInfo; i++)
-                            {
-                                var rgAffectedApp = rgAffectedApps[i];
-                                var procInfo = CreateFromRmProcessInfo(rgAffectedApp);
-                                lockInfos.Add(procInfo);
-                            }
-
-                            break;
-                        }
-
-                        if (errorCode != WIN32_ERROR.ERROR_MORE_DATA)
+                        if (errorCode != WIN32_ERROR.ERROR_MORE_DATA && errorCode != WIN32_ERROR.ERROR_SUCCESS)
                             throw GetException(errorCode, nameof(PInvoke.RmGetList), $"Failed to get entries (retry {retry}).");
 
+                        for (var i = 0; i < pnProcInfo; i++)
+                        {
+                            var rgAffectedApp = rgAffectedApps[i];
+                            var procInfo = CreateFromRmProcessInfo(rgAffectedApp);
+                            lockInfos.Add(procInfo);
+                        }
+
+                        if (errorCode == WIN32_ERROR.ERROR_SUCCESS)
+                            break;
+
                         pnProcInfo = pnProcInfoNeeded;
-                        affectedAppCount = (int)pnProcInfo;
+                        affectedApps = (int)pnProcInfo;
                     }
                 } while ((errorCode == WIN32_ERROR.ERROR_MORE_DATA) && (retry++ < maxRetries));
             }
