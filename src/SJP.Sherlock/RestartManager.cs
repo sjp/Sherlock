@@ -176,15 +176,28 @@ public static class RestartManager
             {
                 fixed (PCWSTR* rgsFileNames = new PCWSTR[pathsArray.Length])
                 {
-                    for (var i = 0; i < pathsArray.Length; i++)
-                    {
-                        var intPtr = Marshal.StringToHGlobalUni(pathsArray[i]);
-                        rgsFileNames[i] = new PCWSTR((char*)intPtr.ToPointer());
-                    }
+                    var intPtrs = new IntPtr[pathsArray.Length];
 
-                    var registerErrorCode = PInvoke.RmRegisterResources(sessionHandle, (uint)pathsArray.Length, rgsFileNames, 0, null, 0, null);
-                    if (registerErrorCode != WIN32_ERROR.ERROR_SUCCESS)
-                        throw GetException(registerErrorCode, nameof(PInvoke.RmRegisterResources), "Could not register resources.");
+                    try
+                    {
+                        for (var i = 0; i < pathsArray.Length; i++)
+                        {
+                            var intPtr = Marshal.StringToHGlobalUni(pathsArray[i]);
+                            intPtrs[i] = intPtr;
+                            rgsFileNames[i] = new PCWSTR((char*)intPtr.ToPointer());
+                        }
+
+                        var registerErrorCode = PInvoke.RmRegisterResources(sessionHandle, (uint)pathsArray.Length, rgsFileNames, 0, null, 0, null);
+                        if (registerErrorCode != WIN32_ERROR.ERROR_SUCCESS)
+                            throw GetException(registerErrorCode, nameof(PInvoke.RmRegisterResources), "Could not register resources.");
+                    }
+                    finally
+                    {
+                        foreach (var intPtr in intPtrs)
+                        {
+                            Marshal.FreeHGlobal(intPtr);
+                        }
+                    }
                 }
             }
 
