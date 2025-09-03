@@ -162,7 +162,8 @@ public static class RestartManager
         {
             fixed (char* strSessionKey = sessionKey)
             {
-                var errorCode = PInvoke.RmStartSession(out sessionHandle, strSessionKey);
+                var sessionKeySpan = new Span<char>(strSessionKey, sessionKey.Length);
+                var errorCode = PInvoke.RmStartSession(out sessionHandle, sessionKeySpan);
                 if (errorCode != WIN32_ERROR.ERROR_SUCCESS)
                     throw GetException(errorCode, nameof(PInvoke.RmStartSession), "Failed to begin restart manager session.");
             }
