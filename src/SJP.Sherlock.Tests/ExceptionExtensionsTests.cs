@@ -141,13 +141,13 @@ internal static class ExceptionExtensionsTests
             }
             catch (IOException innerEx)
             {
-                Assert.Multiple(() =>
+                using (Assert.EnterMultipleScope())
                 {
                     Assert.That(ex.Message, Is.Not.EqualTo(innerEx.Message));
                     Assert.That(ex.HResult, Is.EqualTo(innerEx.HResult));
                     Assert.That(innerEx.InnerException, Is.Not.Null);
                     Assert.That(ex, Is.SameAs(innerEx.InnerException));
-                });
+                }
             }
         }
     }

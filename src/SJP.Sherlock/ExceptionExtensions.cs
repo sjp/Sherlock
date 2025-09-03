@@ -183,7 +183,7 @@ public static class ExceptionExtensions
 
         var lockerList = lockers.ToList();
 
-        fileNames ??= Enumerable.Empty<string>();
+        fileNames ??= [];
         var fileNameList = fileNames.ToList();
         if (fileNameList.Count == 0)
             throw new ArgumentException("At least one filename must be provided, none given.", nameof(fileNames));

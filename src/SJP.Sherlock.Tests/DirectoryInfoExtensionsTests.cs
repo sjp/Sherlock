@@ -58,11 +58,11 @@ internal static class DirectoryInfoExtensionsTests
         using var _ = File.Open(tmpDirFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
         var lockedFiles = tmpDir.DirectoryInfo.EnumerateLockedFiles();
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(lockedFiles, Is.Not.Empty);
             Assert.That(lockedFiles.Select(f => f.FullName), Contains.Item(tmpDirFile));
-        });
+        }
     }
 
     [Test]
