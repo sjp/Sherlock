@@ -29,16 +29,9 @@ public static class RestartManager
         if (!Platform.SupportsRestartManager)
             return [];
 
-        var files = directory.GetFiles();
-        var result = new HashSet<IProcessInfo>();
-
-        foreach (var file in files)
-        {
-            var lockingProcesses = file.GetLockingProcesses();
-            result.UnionWith(lockingProcesses);
-        }
-
-        return result;
+        return directory.GetFiles()
+            .SelectMany(f => f.GetLockingProcesses())
+            .ToHashSet();
     }
 
     /// <summary>
@@ -56,16 +49,9 @@ public static class RestartManager
         if (!Platform.SupportsRestartManager)
             return [];
 
-        var files = directory.GetFiles(searchPattern);
-        var result = new HashSet<IProcessInfo>();
-
-        foreach (var file in files)
-        {
-            var lockingProcesses = file.GetLockingProcesses();
-            result.UnionWith(lockingProcesses);
-        }
-
-        return result;
+        return directory.GetFiles(searchPattern)
+            .SelectMany(f => f.GetLockingProcesses())
+            .ToHashSet();
     }
 
     /// <summary>
@@ -84,16 +70,9 @@ public static class RestartManager
         if (!Platform.SupportsRestartManager)
             return [];
 
-        var files = directory.GetFiles(searchPattern, searchOption);
-        var result = new HashSet<IProcessInfo>();
-
-        foreach (var file in files)
-        {
-            var lockingProcesses = file.GetLockingProcesses();
-            result.UnionWith(lockingProcesses);
-        }
-
-        return result;
+        return directory.GetFiles(searchPattern, searchOption)
+            .SelectMany(f => f.GetLockingProcesses())
+            .ToHashSet();
     }
 
     /// <summary>
