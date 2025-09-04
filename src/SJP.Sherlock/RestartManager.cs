@@ -259,14 +259,14 @@ public static class RestartManager
     private static Exception GetException(WIN32_ERROR errorCode, string apiName, string message)
     {
         var errorCodeNumber = (int)errorCode;
-        var reason = _win32ErrorMessages.TryGetValue(errorCode, out var errorMessage)
+        var reason = Win32ErrorMessages.TryGetValue(errorCode, out var errorMessage)
             ? errorMessage
             : string.Format("0x{0:x8}", errorCodeNumber);
 
         return new Win32Exception(errorCodeNumber, $"{message} ({apiName}() error {errorCodeNumber}: {reason})");
     }
 
-    private static readonly IReadOnlyDictionary<WIN32_ERROR, string> _win32ErrorMessages = new Dictionary<WIN32_ERROR, string>
+    private static readonly IReadOnlyDictionary<WIN32_ERROR, string> Win32ErrorMessages = new Dictionary<WIN32_ERROR, string>
     {
         [WIN32_ERROR.ERROR_ACCESS_DENIED] = "Access is denied.",
         [WIN32_ERROR.ERROR_SEM_TIMEOUT] = "A Restart Manager function could not obtain a Registry write mutex in the allotted time. A system restart is recommended because further use of the Restart Manager is likely to fail.",
