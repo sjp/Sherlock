@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SJP.Sherlock.Tests/SJP.Sherlock.Tests.csproj" />
+  <Project Path="SJP.Sherlock/SJP.Sherlock.csproj" />
+</Solution>
