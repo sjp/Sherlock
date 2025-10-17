@@ -193,7 +193,8 @@ public static class RestartManager
                 {
                     fixed (RM_PROCESS_INFO* rgAffectedApps = new RM_PROCESS_INFO[affectedApps])
                     {
-                        errorCode = PInvoke.RmGetList(sessionHandle, out var pnProcInfoNeeded, ref pnProcInfo, rgAffectedApps, out _);
+                        var rgAffectedAppsSpan = new Span<RM_PROCESS_INFO>(rgAffectedApps, affectedApps);
+                        errorCode = PInvoke.RmGetList(sessionHandle, out var pnProcInfoNeeded, ref pnProcInfo, rgAffectedAppsSpan, out _);
                         if (errorCode != WIN32_ERROR.ERROR_MORE_DATA && errorCode != WIN32_ERROR.ERROR_SUCCESS)
                             throw GetException(errorCode, nameof(PInvoke.RmGetList), $"Failed to get entries (retry {retry}).");
 
